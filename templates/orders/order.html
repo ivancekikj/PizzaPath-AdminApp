@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Order {% endblock %}
+
+{% block content %}
+    <h1>Order</h1>
+    <main>
+        <section id="orders">
+            <h2>Cart</h2>
+            {% if user.is_authenticated is False %}
+                <p>Log in to order</p>
+            {% endif %}
+            <table id="orders-table">
+                <thead>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Option</th>
+                </thead>
+            </table>
+            <br>
+            <div id="total-price">Total: <span>0</span>.00 den</div>
+            <button id="submit-order" style="margin-top: 15px; width: 100px;" {% if user.is_authenticated is False %} disabled {% endif %}>Submit Order</button>
+        </section>
+        <section id="filter">
+            <h2>Filter</h2>
+            <select>
+                <option value="Show all">Show all</option>
+                {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+        </section>
+        <section id="foods">
+            <h2>Foods</h2>
+            {% for key, values in foods.items %}
+                <div class="category {{ key }}">
+                    <h3>{{ key }}</h3>
+                    {% for value in values %}
+                        <div class="food">
+                            <h4 class="food-name">{{ value.name }}</h4>
+                            <div class="food-price"><span>{{ value.priceMKD }}</span>.00 den</div>
+                            <img src="{{ value.image.url }}" alt="{{ value.name }}">
+                            <button class="food-button {{ value.name }}" {% if user.is_authenticated is False %} disabled {% endif %}>Add to Cart</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </section>
+    </main>
+    <script src="{% static 'javascript/filter.js' %}"></script>
+    <script src="{% static 'javascript/order.js' %}"></script>
+{% endblock %}

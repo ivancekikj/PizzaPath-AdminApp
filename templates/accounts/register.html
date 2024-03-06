@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %} Register {% endblock %}
+
+{% block content %}
+    <h1>Register</h1>
+    {% include "partials/_messages.html" %}
+    <form action="{% url 'register' %}" method="POST">
+        {% csrf_token %}
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Enter Username">
+        <label>First Name</label>
+        <input type="text" name="firstName" placeholder="Enter First Name">
+        <label>Last Name</label>
+        <input type="text" name="lastName" placeholder="Enter Last Name">
+        <label>Email</label>
+        <input type="text" name="email" placeholder="Enter Email">
+        <label>Phone Number</label>
+        <input type="text" name="phoneNumber" placeholder="Enter Phone Number">
+        <label>Adress</label>
+        <input type="text" name="adress" placeholder="Enter Adress">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter Password" maxlength="120">
+        <label>Confirm Password</label>
+        <input type="password" name="password2" placeholder="Enter Password Again" maxlength="120">
+        <button id="submit-button">Submit</button>
+    </form>
+    <div id="rules">
+        <h3>Rules:</h3>
+        <p>1) Usernames must be between 4 and 50 characters long with only letters, digits, underscores and periods.</p>
+        <p>2) First and last names must be single names capitalized.</p>
+        <p>3) Phone numbers must be of the format xxx/xxx-xxx and no other.</p>
+        <p>4) Passwords must be between 8 and 32 characters long with at least one lowercase and uppercase letter, as well as one digit. No other chracters are allowed.</p>
+    </div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% load static %}
+<div id="messages">
+    {% for message in messages %}
+        <div class="message {{ message.level_tag }}">{{ message.message }}</div>
+    {% endfor %}
+</div>
+<script src="{% static 'javascript/message.js' %}"></script>

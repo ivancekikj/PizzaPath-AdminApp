@@ -1,0 +1,192 @@
+:root {
+    --white: #fff;
+}
+
+body {
+    background-color: #000;
+    color: var(--white);
+    font-family: sans-serif;
+}
+
+button:focus {
+    outline: none;
+}
+
+a {
+    color: var(--white);
+    text-decoration: none;
+}
+
+h1 {
+    text-align: center;
+}
+
+p {
+    text-align: justify;
+    text-indent: 3rem;
+}
+
+form {
+    display: block;
+    margin: auto;
+    width: 30%;
+}
+
+label, button {
+    display: block;
+}
+
+input {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0.25rem 0 1rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: none;
+}
+
+#submit-button {
+    margin: auto;
+    font-size: 1rem;
+    background-color: #00ff00;
+    border: none;
+    padding: 0.5rem;
+    color: var(--white);
+    cursor: pointer;
+    border-radius: 0.5rem;
+}
+
+#submit-button:hover, .food-button:hover {
+    background-color: #00af00;
+}
+
+#submit-button:active, .food-button:active {
+    background-color: #009000;
+}
+
+#messages {
+    width: 30%;
+    margin: auto;
+}
+
+.message {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    width: 100%;
+    animation: dissapear 2s;
+    animation-delay: 3s;
+    box-sizing: border-box;   
+}
+
+@keyframes dissapear {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.error {
+    background-color: #ff0000;
+}
+
+.success {
+    background-color: #00ff00;
+}
+
+#rules {
+    width: 30%;
+    margin: auto;
+}
+
+main {
+    width: 80%;
+    margin: auto;
+}
+
+.category {
+    display: flex;
+    justify-content: space-between;
+}
+
+.category img {
+    width: 250px;
+}
+
+#orders-table {
+    width: 50%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+#orders-table td, #orders-table th {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 2px solid var(--white);
+}
+
+#orders-table th {
+    border-top: 2px solid var(--white);
+}
+
+#orders-table button, .food-button {
+    color: var(--white);
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.food-button {
+    background-color: #00ff00;
+    width: 40%;
+}
+
+.food-button:disabled {
+    background-color: lightgreen;
+    cursor: auto;
+}
+
+#orders-table button {
+    width: 100%;
+    background-color: red;
+}
+
+#orders-table button:hover {
+    background-color: #ff2d2d;
+}
+
+#orders-table button:active {
+    background-color: #8b0000;
+}
+
+#orders-table select {
+    width: 50%;
+    height: 25px;
+}
+
+select:focus {
+    outline: none;
+}
+
+#filter select {
+    width: 25%;
+    height: 30px;
+}
+
+#orders p {
+    text-indent: 0;
+    color: red;
+}
+
+#filter, #foods {
+    margin-top: 50px;
+}
+
+.disabled {
+    background-color: lightgreen;
+    cursor: auto;
+}
