@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-import os
+import os, json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,14 +77,17 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
+db_connection = open('./project/db_connection.json', 'r')
+connection = json.loads(db_connection.read())
+db_connection.close()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "project_db",
-        "HOST": "localhost",
-        "USER": "postgres",
-        "PASSWORD": ""
+        'NAME': "PizzaDeliciousDb",
+        "HOST": connection["host"],
+        "USER": connection["user"],
+        "PASSWORD": connection["password"],
+        "PORT": connection["port"],
     }
 }
 

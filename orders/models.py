@@ -15,4 +15,4 @@ class Quantity(models.Model):
     quantity = models.IntegerField()
 
     def __str__(self):
-        return f"{order.__str__()} - {self.food.name}"
+        return f"{self.order.__str__()} - {self.food.name}"
