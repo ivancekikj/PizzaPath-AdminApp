@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from foods.models import Category, Food
+from apps.menu.models import Category, Food
 from .models import Order, Quantity
 
 def order(request):

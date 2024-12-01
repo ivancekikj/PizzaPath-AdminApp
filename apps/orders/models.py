@@ -1,5 +1,5 @@
 from django.db import models
-from foods.models import Food
+from apps.menu.models import Food
 from django.contrib.auth.models import User
 
 class Order(models.Model):
