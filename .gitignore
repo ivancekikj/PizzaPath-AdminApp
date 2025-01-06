@@ -1,4 +1,5 @@
 project/db_connection.json
+.idea
 
 # Django #
 *.log
