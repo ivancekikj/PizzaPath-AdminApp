@@ -21,26 +21,25 @@ class NewsletterPost(models.Model):
         return self.title
 
 
-class Customer(models.Model):
+class Customer(User):
     address = models.CharField(max_length=200, null=False)
     phoneNumber = models.CharField(max_length=20, null=False)
     is_subscribed_to_newsletter = models.BooleanField(default=False, null=False)
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=False, blank=False)
     received_posts = models.ManyToManyField(NewsletterPost)
 
     def __str__(self):
-        return self.user.username
+        return self.username
 
 
 class CouponReward(models.Model):
     count = models.IntegerField(null=False, default=0, validators=[MinValueValidator(0)])
 
-    user = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     models = models.ForeignKey(FoodPortion, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.models.food.name}"
+        return f"{self.customer.username} - {self.models.food.name}"
 
 
 class WorkingDay(models.Model):
