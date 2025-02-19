@@ -13,6 +13,13 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os, json
 
+from django.db import connection
+
+config_file = open('config.json', 'r')
+config = json.loads(config_file.read())
+config_file.close()
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,11 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@r(hrw6_r3wkn=9&w83vnt1sf!p7@y^h!h1@1&g@(zr$-!*t8h'
+SECRET_KEY = config["secret_key"]
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config["debug"]
 
 ALLOWED_HOSTS = []
 
@@ -77,17 +82,16 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-db_connection = open('./project/db_connection.json', 'r')
-connection = json.loads(db_connection.read())
-db_connection.close()
+
+db_credentials = config["db"]
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "PizzaDeliciousDb",
-        "HOST": connection["host"],
-        "USER": connection["user"],
-        "PASSWORD": connection["password"],
-        "PORT": connection["port"],
+        'NAME': db_credentials["name"],
+        "HOST": db_credentials["host"],
+        "USER": db_credentials["user"],
+        "PASSWORD": db_credentials["password"],
+        "PORT": db_credentials["port"],
     }
 }
 

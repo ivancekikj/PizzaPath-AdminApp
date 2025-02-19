@@ -1,4 +1,4 @@
-project/db_connection.json
+config.json
 
 # Django #
 *.log
