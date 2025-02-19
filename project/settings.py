@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "apps.accounts.apps.AccountsConfig",
     "apps.menu.apps.MenuConfig",
     "apps.orders.apps.OrdersConfig",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -89,6 +90,8 @@ DATABASES = {
         "PORT": connection["port"],
     }
 }
+
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 
 # Password validation
