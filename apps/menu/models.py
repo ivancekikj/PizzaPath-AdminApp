@@ -23,7 +23,7 @@ class Food(models.Model):
     description = models.TextField(blank=False, null=False)
 
     category = models.ForeignKey(Category, null=True, blank=False, on_delete=models.SET_NULL)
-    toppings = models.ManyToManyField(Topping)
+    toppings = models.ManyToManyField(Topping, blank=True)
 
     def __str__(self):
         return self.name

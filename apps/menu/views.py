@@ -23,5 +23,5 @@ class FoodViewSet(viewsets.ModelViewSet):
         if category_id is None:
             return Response("category_id is required", status=400)
         foods = Food.objects.filter(category_id=category_id)
-        serialized_data = FoodSerializer(foods, many=True).data
+        serialized_data = FoodSerializer(foods, many=True, context={'request': request}).data
         return Response(serialized_data, status=200)
