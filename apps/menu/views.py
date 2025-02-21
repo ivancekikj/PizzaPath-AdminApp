@@ -11,7 +11,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
 
     http_method_names = ["get",]
-    permission_classes = [IsAuthenticated]
 
 
 class FoodViewSet(viewsets.ModelViewSet):
@@ -19,7 +18,6 @@ class FoodViewSet(viewsets.ModelViewSet):
     serializer_class = FoodSerializer
 
     http_method_names = ["get",]
-    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         category_id = request.query_params.get('category_id', None)

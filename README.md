@@ -9,6 +9,7 @@
     <li>Create a file called 'config.json' in the root folder with the following information:
         <pre>
 {
+  "api_key": "",
   "secret_key": "",
   "debug": , // true or false
   "db": {
