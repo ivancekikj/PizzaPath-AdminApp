@@ -25,3 +25,4 @@ class FoodViewSet(viewsets.ModelViewSet):
         foods = Food.objects.filter(category_id=category_id)
         serialized_data = FoodSerializer(foods, many=True, context={'request': request}).data
         return Response(serialized_data, status=200)
+
