@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.menu.models import Food, Category
@@ -10,6 +11,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
 
     http_method_names = ["get",]
+    permission_classes = [IsAuthenticated]
 
 
 class FoodViewSet(viewsets.ModelViewSet):
@@ -17,6 +19,7 @@ class FoodViewSet(viewsets.ModelViewSet):
     serializer_class = FoodSerializer
 
     http_method_names = ["get",]
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         category_id = request.query_params.get('category_id', None)

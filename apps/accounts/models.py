@@ -23,7 +23,7 @@ class NewsletterPost(models.Model):
 
 class Customer(User):
     address = models.CharField(max_length=200, null=False)
-    phoneNumber = models.CharField(max_length=20, null=False)
+    phone_number = models.CharField(max_length=20, null=False)
     is_subscribed_to_newsletter = models.BooleanField(default=False, null=False)
 
     received_posts = models.ManyToManyField(NewsletterPost)
