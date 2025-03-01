@@ -5,6 +5,9 @@ from django.db import models
 class Category(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
 
+    class Meta:
+        verbose_name_plural = "Categories"
+
     def __str__(self):
         return self.name
 
@@ -44,6 +47,9 @@ class FoodPortion(models.Model):
 
     size = models.ForeignKey(Size, null=True, blank=False, on_delete=models.SET_NULL)
     food = models.ForeignKey(Food, null=True, blank=False, on_delete=models.SET_NULL)
+
+    class Meta:
+        verbose_name_plural = "Food Portions"
 
     def __str__(self):
         return f"{self.food.name} - {self.size.name}"

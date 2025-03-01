@@ -35,5 +35,9 @@ class OrderItem(models.Model):
     food_portion = models.ForeignKey(FoodPortion, on_delete=models.SET_NULL, null=True)
     toppings = models.ManyToManyField(Topping)
 
+    class Meta:
+        verbose_name = "Order Item"
+        verbose_name_plural = "Order Items"
+
     def __str__(self):
         return f"{self.order.__str__()} - {self.food_portion.food.name}"

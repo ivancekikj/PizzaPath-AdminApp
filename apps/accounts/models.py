@@ -8,6 +8,10 @@ from apps.menu.models import FoodPortion
 class User(AbstractUser):
     is_email_confirmed = models.BooleanField(default=False, null=False)
 
+    class Meta:
+        verbose_name = "Employee"
+        verbose_name_plural = "Employees"
+
     def __str__(self):
         return self.username
 
@@ -16,6 +20,10 @@ class NewsletterPost(models.Model):
     title = models.CharField(max_length=200, blank=False, null=False)
     content = models.TextField(blank=False, null=False)
     date = models.DateTimeField(auto_now_add=True, null=False)
+
+    class Meta:
+        verbose_name = "Newsletter Post"
+        verbose_name_plural = "Newsletter Posts"
 
     def __str__(self):
         return self.title
@@ -28,6 +36,10 @@ class Customer(User):
 
     received_posts = models.ManyToManyField(NewsletterPost)
 
+    class Meta:
+        verbose_name = "Customer"
+        verbose_name_plural = "Customers"
+
     def __str__(self):
         return self.username
 
@@ -36,10 +48,7 @@ class CouponReward(models.Model):
     count = models.IntegerField(null=False, default=0, validators=[MinValueValidator(0)])
 
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
-    models = models.ForeignKey(FoodPortion, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return f"{self.customer.username} - {self.models.food.name}"
+    food_portion = models.ForeignKey(FoodPortion, on_delete=models.SET_NULL, null=True)
 
 
 class WorkingDay(models.Model):
@@ -51,6 +60,10 @@ class WorkingDay(models.Model):
     is_closed = models.BooleanField(default=False, blank=False, null=False)
     start_time = models.TimeField(null=True, blank=True, default=OPENING_TIME)
     end_time = models.TimeField(null=True, blank=True, default=CLOSING_TIME)
+
+    class Meta:
+        verbose_name = "Working Day"
+        verbose_name_plural = "Working Days"
 
     def __str__(self):
         return self.date
