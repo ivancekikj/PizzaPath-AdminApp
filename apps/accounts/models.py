@@ -1,6 +1,8 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from apps.menu.models import FoodPortion
 
@@ -56,8 +58,8 @@ class WorkingDay(models.Model):
     CLOSING_TIME = "16:00"
     NON_WORKING_DAYS = ("Saturday", "Sunday")
 
-    date = models.DateField(null=False, blank=False)
-    is_closed = models.BooleanField(default=False, blank=False, null=False)
+    date = models.DateField(null=False, blank=False, unique=True)
+    is_working_day = models.BooleanField(default=True, blank=False, null=False)
     start_time = models.TimeField(null=True, blank=True, default=OPENING_TIME)
     end_time = models.TimeField(null=True, blank=True, default=CLOSING_TIME)
 
@@ -65,5 +67,15 @@ class WorkingDay(models.Model):
         verbose_name = "Working Day"
         verbose_name_plural = "Working Days"
 
+    def clean(self):
+        if self.date <= timezone.now().date():
+            raise ValidationError({'date': 'Date must be in the future.'})
+        if self.start_time and self.end_time and self.start_time >= self.end_time:
+            raise ValidationError({'start_time': 'Start time must be before end time.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.date
+        return self.date.__str__()

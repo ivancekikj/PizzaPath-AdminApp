@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils import timezone
 
 from apps.accounts.models import Customer, CouponReward, NewsletterPost, WorkingDay, User
 
@@ -61,8 +62,43 @@ class CustomerAdmin(admin.ModelAdmin):
         return False
 
 
+class NewsletterPostAdmin(admin.ModelAdmin):
+    list_display = ("title", "date")
+    search_fields = ("title", "date")
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        for customer in Customer.objects.filter(is_subscribed_to_newsletter=True):
+            customer.received_posts.add(obj)
+            customer.save()
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+class WorkingDayAdmin(admin.ModelAdmin):
+    class Media:
+        js = ('js/validate_working_day.js',)
+
+    fieldsets = (
+        ("General Info", {"fields": ("date", "is_working_day")}),
+        ("Work Time", {"fields": ("start_time", "end_time",)}),
+    )
+    list_display = ("date", "is_working_day")
+    search_fields = ("date", "is_working_day")
+    list_filter = ("is_working_day",)
+
+    def has_delete_permission(self, request, obj=None):
+        return obj and timezone.now().date() < obj.date
+
+    def has_change_permission(self, request, obj=None):
+        return obj and timezone.now().date() < obj.date
+
+
 admin.site.register(User, EmployeeAdmin)
 admin.site.register(Customer, CustomerAdmin)
-# admin.site.register(CouponReward)
-admin.site.register(NewsletterPost)
-admin.site.register(WorkingDay)
+admin.site.register(NewsletterPost, NewsletterPostAdmin)
+admin.site.register(WorkingDay, WorkingDayAdmin)

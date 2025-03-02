@@ -49,6 +49,7 @@ class FoodPortion(models.Model):
     food = models.ForeignKey(Food, null=True, blank=False, on_delete=models.SET_NULL)
 
     class Meta:
+        verbose_name = "Food Portion"
         verbose_name_plural = "Food Portions"
 
     def __str__(self):

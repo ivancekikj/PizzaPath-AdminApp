@@ -15,7 +15,7 @@ class Order(models.Model):
         ("closed", "Delivered and paid."),
     ]
 
-    date_time_edited = models.DateTimeField(auto_now_add=True)
+    date_time_edited = models.DateTimeField(null=False)
     status = models.CharField(max_length=100, null=False, blank=False, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
     description = models.TextField(null=True)
 
