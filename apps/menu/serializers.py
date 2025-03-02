@@ -30,3 +30,8 @@ class FoodSerializer(serializers.ModelSerializer):
 
     def get_average_rating(self, obj):
         return Rating.objects.filter(food_id=obj.id).aggregate(avg_score=Avg('value'))["avg_score"]
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ("user",)

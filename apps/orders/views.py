@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from apps.menu.models import Category, Food
-from .models import Order, Quantity
+
 
 def order(request):
     if request.method == "POST":
