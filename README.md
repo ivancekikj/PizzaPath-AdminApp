@@ -8,9 +8,8 @@
     </li>
     <li>Create a file called '.env' in the root folder with the following information:
         <pre>
-API_KEY=
 SECRET_KEY=
-DEBUG=
+DEBUG=True
 DB_HOST=
 DB_USER=
 DB_PASSWORD=

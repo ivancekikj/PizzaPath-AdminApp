@@ -6,23 +6,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-assert os.getenv("API_KEY") is not None and os.getenv("API_KEY") != "", "API_KEY is not set"
 assert os.getenv("SECRET_KEY") is not None and os.getenv("SECRET_KEY") != "", "SECRET_KEY is not set"
 assert os.getenv("DB_NAME") is not None and os.getenv("DB_NAME") != "", "DB_NAME is not set"
 assert os.getenv("DB_USER") is not None and os.getenv("DB_USER") != "", "DB_USER is not set"
 assert os.getenv("DB_PORT") is not None and os.getenv("DB_PORT") != "", "DB_PORT is not set"
 assert os.getenv("DB_HOST") is not None and os.getenv("DB_HOST") != "", "DB_HOST is not set"
 assert os.getenv("DB_PASSWORD") is not None and os.getenv("DB_PASSWORD") != "", "DB_PASSWORD is not set"
+assert os.getenv("DEBUG") == "True" or (os.getenv("DEBUG") is None or os.getenv("DEBUG") == "False") and os.getenv("ALLOWED_HOSTS") is not None and os.getenv("ALLOWED_HOSTS") != "", "ALLOWED_HOSTS is not set when DEBUG=False"
+assert os.getenv("DEBUG") == "True" or (os.getenv("DEBUG") is None or os.getenv("DEBUG") == "False") and os.getenv("CUSTOMER_APP_ORIGIN") is not None and os.getenv("CUSTOMER_APP_ORIGIN") != "", "CUSTOMER_APP_ORIGIN is not set when DEBUG=False"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-API_KEY = os.getenv("API_KEY")
-
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = bool(os.getenv("DEBUG", False))
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+CORS_ALLOW_ALL_ORIGINS = DEBUG
+
+ALLOWED_HOSTS = [] if DEBUG else os.getenv("ALLOWED_HOSTS").split(",")
+
+CORS_ALLOWED_ORIGINS = [] if DEBUG else [os.getenv("CUSTOMER_APP_ORIGIN")]
 
 APPEND_SLASH=False
 
@@ -40,7 +43,8 @@ INSTALLED_APPS = [
     "apps.orders.apps.OrdersConfig",
     "rest_framework",
     "rest_framework_simplejwt",
-    "rest_framework_simplejwt.token_blacklist"
+    "rest_framework_simplejwt.token_blacklist",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -51,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "apps.accounts.middlewares.RestrictApiAccessMiddleware",
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -113,7 +119,6 @@ AUTH_USER_MODEL = 'accounts.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'apps.accounts.authentication.APIKeyAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
