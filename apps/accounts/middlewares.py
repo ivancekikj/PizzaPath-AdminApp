@@ -10,7 +10,7 @@ class RestrictApiAccessMiddleware:
             if request.path.startswith('/api/'):
                 origin = request.META.get('HTTP_ORIGIN')
                 allowed_origins = settings.CORS_ALLOWED_ORIGINS
-                if origin and origin not in allowed_origins:
+                if origin is None or origin not in allowed_origins:
                     return HttpResponseForbidden("Access denied")
         response = self.get_response(request)
         return response

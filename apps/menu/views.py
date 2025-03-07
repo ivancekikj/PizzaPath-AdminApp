@@ -22,9 +22,8 @@ class FoodViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         category_id = request.query_params.get('category_id', None)
-        if category_id is None:
-            return Response("category_id is required", status=400)
-        foods = Food.objects.filter(category_id=category_id)
+        category_id = int(category_id) if category_id else None
+        foods = Food.objects.all() if category_id is None else Food.objects.filter(category_id=category_id)
         serialized_data = FoodSerializer(foods, many=True, context={'request': request}).data
         return Response(serialized_data, status=200)
 
