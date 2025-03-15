@@ -8,6 +8,7 @@ from apps.menu.models import FoodPortion
 
 
 class User(AbstractUser):
+    email = models.EmailField(unique=True, blank=False, null=False)
     is_email_confirmed = models.BooleanField(default=False, null=False)
 
     class Meta:
@@ -33,7 +34,7 @@ class NewsletterPost(models.Model):
 
 class Customer(User):
     address = models.CharField(max_length=200, null=False)
-    phone_number = models.CharField(max_length=20, null=False)
+    phone_number = models.CharField(max_length=20, null=False, unique=True)
     is_subscribed_to_newsletter = models.BooleanField(default=False, null=False)
 
     received_posts = models.ManyToManyField(NewsletterPost)
