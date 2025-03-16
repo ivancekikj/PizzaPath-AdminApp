@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from apps.accounts.models import Customer
 from apps.accounts.serializers import CustomTokenObtainPairSerializer, CustomerSerializer
 
 
@@ -12,6 +13,12 @@ class CustomerView(APIView):
         if self.request.method == "POST":
             return [AllowAny()]
         return [IsAuthenticated()]
+
+    def get(self, request):
+        user_id = request.user.id
+        customer = Customer.objects.get(id=user_id)
+        serializer = CustomerSerializer(customer)
+        return Response(serializer.data)
 
     def post(self, request):
         serializer = CustomerSerializer(data=request.data)
