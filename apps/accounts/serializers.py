@@ -12,11 +12,3 @@ class CustomerSerializer(serializers.ModelSerializer):
     def create(self, data):
         user = Customer.objects.create_user(**data)
         return user
-
-
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        if self.user.is_staff:
-            raise serializers.ValidationError("Only customers are allowed to log in.")
-        return data
