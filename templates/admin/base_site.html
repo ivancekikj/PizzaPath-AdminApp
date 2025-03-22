@@ -7,6 +7,9 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
 {% endblock %}
 
+{% block extrahead %}
+    <link rel="icon" type="image/x-icon" href="{% static 'img/logo.svg' %}">
+{% endblock %}
 
 {% block branding %}
     <img src="{% static 'img/logo.svg' %}" alt="Company logo" class="logo">

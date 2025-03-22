@@ -27,6 +27,13 @@ ALLOWED_HOSTS = [] if DEBUG else os.getenv("ALLOWED_HOSTS").split(",")
 
 CORS_ALLOWED_ORIGINS = [] if DEBUG else [os.getenv("CUSTOMER_APP_ORIGIN")]
 
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    'withauthentication',
+    'content-type'
+]
+
 APPEND_SLASH=False
 
 # Application definition
