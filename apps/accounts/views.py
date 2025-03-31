@@ -2,8 +2,7 @@ from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from apps.accounts.models import Customer
 from apps.accounts.serializers import CustomerSerializer
@@ -50,6 +49,13 @@ class LoginView(APIView):
             secure=True,
             samesite="Lax",
         )
+        response.set_cookie(
+            key="refresh_token",
+            value=str(refresh),
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+        )
 
         return response
 
@@ -59,5 +65,6 @@ class LogoutView(APIView):
 
     def post(self, request):
         response = Response(status=200)
-        response.delete_cookie("jwt")  # Remove the JWT cookie
+        response.delete_cookie("jwt")
+        response.delete_cookie("refresh_token")
         return response
