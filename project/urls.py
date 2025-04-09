@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 
 from apps.accounts.views import CustomerView, LogoutView, LoginView
-from apps.menu.views import CategoryViewSet, FoodViewSet
+from apps.menu.views import CategoryViewSet, FoodViewSet, FoodPortionView
 
 router = DefaultRouter()
 router.register(r"menu/categories", CategoryViewSet)
@@ -14,6 +14,7 @@ router.register(r"menu/foods", FoodViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/menu/food-portions/', FoodPortionView.as_view()),
     path('api/accounts/customers/', CustomerView.as_view()),
     path('api/accounts/login/', LoginView.as_view()),
     path('api/accounts/logout/', LogoutView.as_view()),

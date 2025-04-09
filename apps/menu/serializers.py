@@ -1,6 +1,6 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from .models import Category, Food, Rating, Topping
+from .models import Category, Food, Rating, Topping, FoodPortion, Size
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -18,6 +18,7 @@ class ToppingSerializer(serializers.ModelSerializer):
 class FoodSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
+    toppings = ToppingSerializer(many=True)
 
     class Meta:
         model = Food
@@ -31,7 +32,22 @@ class FoodSerializer(serializers.ModelSerializer):
     def get_average_rating(self, obj):
         return Rating.objects.filter(food_id=obj.id).aggregate(avg_score=Avg('value'))["avg_score"]
 
+
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = ("user",)
+
+
+class SizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Size
+        fields = "__all__"
+
+
+class FoodPortionSerializer(serializers.ModelSerializer):
+    size = SizeSerializer()
+
+    class Meta:
+        model = FoodPortion
+        fields = "__all__"
