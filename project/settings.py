@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "apps.accounts.apps.AccountsConfig",
     "apps.menu.apps.MenuConfig",
     "apps.orders.apps.OrdersConfig",
+    "apps.order_history.apps.OrderHistoryConfig"
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
