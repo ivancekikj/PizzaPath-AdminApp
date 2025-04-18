@@ -2,28 +2,63 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 
-class Category(models.Model):
+class AbstractCategory(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
 
     class Meta:
+        abstract = True
         verbose_name_plural = "Categories"
 
     def __str__(self):
         return self.name
 
 
-class Topping(models.Model):
+class AbstractTopping(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
+
+    class Meta:
+        abstract = True
+
+
+class AbstractFood(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    description = models.TextField(blank=False, null=False)
+
+    class Meta:
+        abstract = True
+
+
+class AbstractSize(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.name
+
+
+class AbstractRating(models.Model):
+    value = models.IntegerField(null=False, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    customer = models.ForeignKey("accounts.Customer", on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class Category(AbstractCategory):
+    pass
+
+
+class Topping(AbstractTopping):
     price = models.IntegerField(blank=False, null=False, validators=[MinValueValidator(1)])
 
     def __str__(self):
         return self.name
 
 
-class Food(models.Model):
-    name = models.CharField(max_length=100, blank=False, null=False)
+class Food(AbstractFood):
     image = models.ImageField(upload_to="food_photos")
-    description = models.TextField(blank=False, null=False)
 
     category = models.ForeignKey(Category, null=True, blank=False, on_delete=models.SET_NULL)
     toppings = models.ManyToManyField(Topping, blank=True)
@@ -32,11 +67,8 @@ class Food(models.Model):
         return self.name
 
 
-class Size(models.Model):
-    name = models.CharField(max_length=100, blank=False, null=False)
-
-    def __str__(self):
-        return self.name
+class Size(AbstractSize):
+    pass
 
 
 class FoodPortion(models.Model):
@@ -56,10 +88,7 @@ class FoodPortion(models.Model):
         return f"{self.food.name} - {self.size.name}"
 
 
-class Rating(models.Model):
-    value = models.IntegerField(null=False, validators=[MinValueValidator(1), MaxValueValidator(5)])
-
-    customer = models.ForeignKey("accounts.Customer", on_delete=models.SET_NULL, null=True)
+class Rating(AbstractRating):
     food = models.ForeignKey(Food, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):

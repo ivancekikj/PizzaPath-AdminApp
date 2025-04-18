@@ -30,8 +30,6 @@ class OrderItemView(APIView):
             order.save()
         order_item = OrderItem.objects.create(
             quantity=quantity,
-            discount = food_portion.discount,
-            price=food_portion.price,
             order=order,
             food_portion=food_portion,
         )

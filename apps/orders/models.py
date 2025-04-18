@@ -6,29 +6,37 @@ from apps.menu.models import Food, FoodPortion, Topping
 from django.contrib.auth.models import User
 
 
-class Order(models.Model):
+class AbstractOrder(models.Model):
+    description = models.TextField(null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
+    date_time_edited = models.DateTimeField(null=False)
+
+    class Meta:
+            abstract = True
+
+
+class AbstractOrderItem(models.Model):
+    quantity = models.IntegerField(null=False, validators=[MinValueValidator(1)])
+
+    class Meta:
+        abstract = True
+
+
+class Order(AbstractOrder):
     STATUS_CHOICES = [
         ("edit", "Being edited."),
         ("submitted", "Submitted and awaiting processing."),
         ("preparation", "Currently being prepared."),
         ("delivery", "Currently being delivered."),
-        ("closed", "Delivered and paid."),
     ]
 
-    date_time_edited = models.DateTimeField(null=False)
     status = models.CharField(max_length=100, null=False, blank=False, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
-    description = models.TextField(null=True)
-
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"{self.customer.username} - {self.status}"
 
 
-class OrderItem(models.Model):
-    quantity = models.IntegerField(null=False, validators=[MinValueValidator(1)])
-    discount = models.FloatField(null=True, validators=[MinValueValidator(0), MaxValueValidator(1)])
-    price = models.IntegerField(blank=False, null=False, validators=[MinValueValidator(1)])
+class OrderItem(AbstractOrderItem):
     are_coupons_used = models.BooleanField(default=False, null=False)
 
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
