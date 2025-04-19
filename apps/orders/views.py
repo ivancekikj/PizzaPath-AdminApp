@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from apps.menu.models import FoodPortion, Topping
 from apps.orders.models import Order, OrderItem
+from apps.orders.serialiers import OrderSerializer
 
 
 class OrderItemView(APIView):
@@ -22,7 +23,7 @@ class OrderItemView(APIView):
         if food_portion_id is None:
             return Response("food_portion_id expected.", status=400)
 
-        order = Order.objects.filter(customer_id=user_id).exclude(status="closed").first()
+        order = Order.objects.filter(customer_id=user_id).first()
         food_portion = FoodPortion.objects.get(id=food_portion_id)
         toppings = Topping.objects.filter(id__in=toppings_ids) if toppings_ids and len(toppings_ids) > 0 else []
         if order is None:
@@ -39,3 +40,15 @@ class OrderItemView(APIView):
         order_item.save()
 
         return Response(status=200)
+
+
+class CurrentOrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.user.id
+        order = Order.objects.filter(customer_id=user_id).first()
+        if order is None:
+            return Response(None, status=200)
+        serialized_data = OrderSerializer(order, context={'request': request}).data
+        return Response(serialized_data, status=200)
