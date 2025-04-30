@@ -37,5 +37,5 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ("id", "date_time_edited", "status", "description", "items")
 
     def get_items(self, obj):
-        items = OrderItem.objects.filter(order_id=obj.id)
+        items = OrderItem.objects.filter(order_id=obj.id).order_by("-date_time_created")
         return OrderItemSerializer(items, many=True, context=self.context).data
