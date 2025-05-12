@@ -77,3 +77,17 @@ class CurrentOrderView(APIView):
             return Response(None, status=200)
         serialized_data = OrderSerializer(order, context={'request': request}).data
         return Response(serialized_data, status=200)
+
+    def put(self, request, *args, **kwargs):
+        user_id = request.user.id
+        description = request.data.get('description', None)
+
+        order = Order.objects.filter(customer_id=user_id).first()
+        if order is None:
+            return Response("order not found.", status=404)
+
+        if description:
+            order.description = description
+        order.save()
+
+        return Response(status=200)
