@@ -1,5 +1,6 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 from apps.accounts.models import Customer
 from apps.menu.models import Food, FoodPortion, Topping
@@ -38,6 +39,7 @@ class Order(AbstractOrder):
 
 class OrderItem(AbstractOrderItem):
     are_coupons_used = models.BooleanField(default=False, null=False)
+    date_time_created = models.DateTimeField(default=timezone.now, null=False)
 
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
     food_portion = models.ForeignKey(FoodPortion, on_delete=models.SET_NULL, null=True)

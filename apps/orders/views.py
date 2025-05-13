@@ -41,6 +41,35 @@ class OrderItemView(APIView):
 
         return Response(status=200)
 
+    def put(self, request, *args, **kwargs):
+        item_id = kwargs.get('id')
+        quantity = request.data.get('quantity', None)
+        food_portion_id = request.data.get('food_portion_id', None)
+        toppings_ids = request.data.get('toppings_ids', [])
+        user_id = request.user.id
+
+        if quantity is None:
+            return Response("quantity expected.", status=400)
+        if food_portion_id is None:
+            return Response("food_portion_id expected.", status=400)
+
+        order_item = OrderItem.objects.get(id=item_id, order__customer_id=user_id)
+        if order_item is None:
+            return Response("order_item not found.", status=404)
+
+        order_item.quantity = quantity
+        order_item.food_portion = FoodPortion.objects.get(id=food_portion_id)
+        order_item.toppings.clear()
+        toppings = Topping.objects.filter(id__in=toppings_ids) if toppings_ids and len(toppings_ids) > 0 else []
+        order_item.toppings.add(*toppings)
+        order_item.save()
+
+        order = Order.objects.get(id=order_item.order.id)
+        order.date_time_edited = datetime.now()
+        order.save()
+
+        return Response(status=200)
+
 
 class CurrentOrderView(APIView):
     permission_classes = [IsAuthenticated]
@@ -52,3 +81,18 @@ class CurrentOrderView(APIView):
             return Response(None, status=200)
         serialized_data = OrderSerializer(order, context={'request': request}).data
         return Response(serialized_data, status=200)
+
+    def put(self, request, *args, **kwargs):
+        user_id = request.user.id
+        description = request.data.get('description', None)
+
+        order = Order.objects.filter(customer_id=user_id).first()
+        if order is None:
+            return Response("order not found.", status=404)
+
+        if description:
+            order.description = description
+            order.date_time_edited = datetime.now()
+        order.save()
+
+        return Response(status=200)

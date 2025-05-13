@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/menu/food-portions/', FoodPortionView.as_view()),
     path('api/orders/current-order/items/', OrderItemView.as_view()),
+    path('api/orders/current-order/items/<int:id>/', OrderItemView.as_view()),
     path('api/orders/current-order/', CurrentOrderView.as_view()),
     path('api/accounts/customers/', CustomerView.as_view()),
     path('api/accounts/login/', LoginView.as_view()),
