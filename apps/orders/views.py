@@ -70,6 +70,21 @@ class OrderItemView(APIView):
 
         return Response(status=200)
 
+    def delete(self, request, *args, **kwargs):
+        item_id = kwargs.get('id')
+        user_id = request.user.id
+
+        order_item = OrderItem.objects.get(id=item_id, order__customer_id=user_id)
+        if order_item is None:
+            return Response("order_item not found.", status=404)
+
+        order = Order.objects.get(id=order_item.order.id)
+        order_item.delete()
+        order.date_time_edited = datetime.now()
+        order.save()
+
+        return Response(status=200)
+
 
 class CurrentOrderView(APIView):
     permission_classes = [IsAuthenticated]
