@@ -111,3 +111,14 @@ class CurrentOrderView(APIView):
         order.save()
 
         return Response(status=200)
+
+    def delete(self, request, *args, **kwargs):
+        user_id = request.user.id
+        order = Order.objects.filter(customer_id=user_id).first()
+
+        if order is None:
+            return Response("order not found.", status=404)
+
+        order.delete()
+
+        return Response(status=200)
