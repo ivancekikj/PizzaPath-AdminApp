@@ -64,6 +64,10 @@ class OrderItemView(APIView):
         order_item.toppings.add(*toppings)
         order_item.save()
 
+        order = Order.objects.get(id=order_item.order.id)
+        order.date_time_edited = datetime.now()
+        order.save()
+
         return Response(status=200)
 
 
@@ -88,6 +92,7 @@ class CurrentOrderView(APIView):
 
         if description:
             order.description = description
+            order.date_time_edited = datetime.now()
         order.save()
 
         return Response(status=200)
