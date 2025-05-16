@@ -41,7 +41,7 @@ class OrderItem(AbstractOrderItem):
     are_coupons_used = models.BooleanField(default=False, null=False)
     date_time_created = models.DateTimeField(default=timezone.now, null=False)
 
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
     food_portion = models.ForeignKey(FoodPortion, on_delete=models.SET_NULL, null=True)
     toppings = models.ManyToManyField(Topping)
 
