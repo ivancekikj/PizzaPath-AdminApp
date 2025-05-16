@@ -23,12 +23,16 @@ class OrderItemView(APIView):
         if food_portion_id is None:
             return Response("food_portion_id expected.", status=400)
 
-        order = Order.objects.filter(customer_id=user_id).first()
+        order = get_current_order(user_id)
         food_portion = FoodPortion.objects.get(id=food_portion_id)
         toppings = Topping.objects.filter(id__in=toppings_ids) if toppings_ids and len(toppings_ids) > 0 else []
+
         if order is None:
             order = Order.objects.create(customer_id=user_id, date_time_edited=datetime.now())
             order.save()
+        elif not check_if_editable(order):
+            return Response("order is not editable.", status=400)
+
         order_item = OrderItem.objects.create(
             quantity=quantity,
             order=order,
@@ -36,7 +40,6 @@ class OrderItemView(APIView):
         )
         order_item.save()
         order_item.toppings.add(*toppings)
-        order.date_time_edited = datetime.now()
         order_item.save()
 
         return Response(status=200)
@@ -53,6 +56,10 @@ class OrderItemView(APIView):
         if food_portion_id is None:
             return Response("food_portion_id expected.", status=400)
 
+        order = get_current_order(user_id)
+        if not check_if_editable(order):
+            return Response("order is not editable.", status=400)
+
         order_item = OrderItem.objects.get(id=item_id, order__customer_id=user_id)
         if order_item is None:
             return Response("order_item not found.", status=404)
@@ -64,8 +71,7 @@ class OrderItemView(APIView):
         order_item.toppings.add(*toppings)
         order_item.save()
 
-        order = Order.objects.get(id=order_item.order.id)
-        order.date_time_edited = datetime.now()
+        update_order_date(order)
         order.save()
 
         return Response(status=200)
@@ -74,13 +80,16 @@ class OrderItemView(APIView):
         item_id = kwargs.get('id')
         user_id = request.user.id
 
+        order = get_current_order(user_id)
+        if not check_if_editable(order):
+            return Response("order is not editable.", status=400)
+
         order_item = OrderItem.objects.get(id=item_id, order__customer_id=user_id)
         if order_item is None:
             return Response("order_item not found.", status=404)
 
-        order = Order.objects.get(id=order_item.order.id)
         order_item.delete()
-        order.date_time_edited = datetime.now()
+        update_order_date(order)
         order.save()
 
         return Response(status=200)
@@ -91,7 +100,7 @@ class CurrentOrderView(APIView):
 
     def get(self, request, *args, **kwargs):
         user_id = request.user.id
-        order = Order.objects.filter(customer_id=user_id).first()
+        order = get_current_order(user_id)
         if order is None:
             return Response(None, status=200)
         serialized_data = OrderSerializer(order, context={'request': request}).data
@@ -100,25 +109,47 @@ class CurrentOrderView(APIView):
     def put(self, request, *args, **kwargs):
         user_id = request.user.id
         description = request.data.get('description', None)
+        submitted = request.data.get('submitted', None)
 
-        order = Order.objects.filter(customer_id=user_id).first()
+        order = get_current_order(user_id)
         if order is None:
             return Response("order not found.", status=404)
+        if not check_if_editable(order):
+            return Response("order is not editable.", status=400)
 
         if description:
             order.description = description
-            order.date_time_edited = datetime.now()
+            update_order_date(order)
+        elif submitted is not None and submitted is True:
+            order.status = Order.STATUS_CHOICES[1][0]
+            update_order_date(order)
         order.save()
 
         return Response(status=200)
 
     def delete(self, request, *args, **kwargs):
         user_id = request.user.id
-        order = Order.objects.filter(customer_id=user_id).first()
+        order = get_current_order(user_id)
 
         if order is None:
             return Response("order not found.", status=404)
+        if not check_if_editable(order):
+            return Response("order is not editable.", status=400)
 
         order.delete()
 
         return Response(status=200)
+
+
+def check_if_editable(order: Order):
+    if order.status == Order.STATUS_CHOICES[0][0]:
+        return True
+    return False
+
+
+def update_order_date(order: Order):
+    order.date_time_edited = datetime.now()
+
+
+def get_current_order(user_id):
+    return Order.objects.filter(customer_id=user_id).first()
