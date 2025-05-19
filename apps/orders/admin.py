@@ -1,6 +1,8 @@
 import math
 
 from django.contrib import admin
+from django.utils import timezone
+
 from .models import Order, OrderItem
 
 class OrderAdmin(admin.ModelAdmin):
@@ -35,6 +37,13 @@ class OrderAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def has_change_permission(self, request, obj=None):
+        return obj and Order.objects.get(id=obj.id).status != Order.STATUS_CHOICES[0][0]
+
+    def save_model(self, request, obj, form, change):
+        obj.date_time_edited = timezone.now()
+        obj.save()
 
     def get_readonly_fields(self, request, obj=None):
         return ['order_number', 'description', 'customer', 'date_time_edited', 'total_price', 'number_of_items']
