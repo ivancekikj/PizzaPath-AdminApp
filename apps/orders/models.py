@@ -25,10 +25,11 @@ class AbstractOrderItem(models.Model):
 
 class Order(AbstractOrder):
     STATUS_CHOICES = [
-        ("edit", "Being edited."),
-        ("submitted", "Submitted and awaiting processing."),
-        ("preparation", "Currently being prepared."),
-        ("delivery", "Currently being delivered."),
+        ("edit", "edit"),
+        ("submitted", "submitted"),
+        ("preparation", "preparation"),
+        ("delivery", "delivery"),
+        ("closed", "closed"),
     ]
 
     status = models.CharField(max_length=100, null=False, blank=False, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
