@@ -37,6 +37,10 @@ class Order(AbstractOrder):
 
     status = models.CharField(max_length=100, null=False, blank=False, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
 
+    class Meta:
+        verbose_name = "Active Order"
+        verbose_name_plural = "Active Orders"
+
     @staticmethod
     def find_index_of_status(value):
         for i, (val, _) in enumerate(Order.STATUS_CHOICES):
@@ -67,10 +71,6 @@ class OrderItem(AbstractOrderItem):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
     food_portion = models.ForeignKey(FoodPortion, on_delete=models.SET_NULL, null=True)
     toppings = models.ManyToManyField(Topping)
-
-    class Meta:
-        verbose_name = "Order Item"
-        verbose_name_plural = "Order Items"
 
     def __str__(self):
         return f"{self.order.__str__()} - {self.food_portion.food.name}"
