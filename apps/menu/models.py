@@ -93,3 +93,30 @@ class Rating(AbstractRating):
 
     def __str__(self):
         return f"{self.customer.username} - {self.food.name}"
+
+
+# Records
+class CategoryRecord(AbstractCategory):
+    pass
+
+
+class SizeRecord(AbstractSize):
+    pass
+
+
+class ToppingRecord(AbstractTopping):
+    pass
+
+
+class FoodRecord(AbstractFood):
+    image = models.ImageField(upload_to="food_record_photos")
+    category = models.ForeignKey(CategoryRecord, null=True, blank=False, on_delete=models.SET_NULL)
+
+
+class RatingRecord(AbstractRating):
+    food = models.ForeignKey(FoodRecord, on_delete=models.SET_NULL, null=True)
+
+
+class FoodPortionRecord(models.Model):
+    size = models.ForeignKey(SizeRecord, null=True, blank=False, on_delete=models.SET_NULL)
+    food = models.ForeignKey(FoodRecord, null=True, blank=False, on_delete=models.SET_NULL)
