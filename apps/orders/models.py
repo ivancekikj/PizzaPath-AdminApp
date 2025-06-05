@@ -21,6 +21,7 @@ class AbstractOrder(models.Model):
 
 class AbstractOrderItem(models.Model):
     quantity = models.IntegerField(null=False, validators=[MinValueValidator(1)], default=1)
+    date_time_created = models.DateTimeField(default=timezone.now, null=False)
 
     class Meta:
         abstract = True
@@ -66,7 +67,6 @@ class Order(AbstractOrder):
 
 class OrderItem(AbstractOrderItem):
     are_coupons_used = models.BooleanField(default=False, null=False)
-    date_time_created = models.DateTimeField(default=timezone.now, null=False)
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
     food_portion = models.ForeignKey(FoodPortion, on_delete=models.SET_NULL, null=True)
@@ -81,6 +81,9 @@ class OrderRecord(AbstractOrder):
     class Meta:
         verbose_name = "Order Record"
         verbose_name_plural = "Order Records"
+
+    def __str__(self):
+        return f"{self.customer.username} - {self.date_time_edited.strftime('%Y-%m-%d %H:%M:%S')}"
 
 
 class OrderItemRecord(AbstractOrderItem):
