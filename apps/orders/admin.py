@@ -4,7 +4,8 @@ from django.contrib import admin
 from django.utils import timezone
 from django.utils.html import format_html
 
-from .models import Order
+from .models import Order, OrderRecord
+
 
 class OrderAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -73,4 +74,30 @@ class OrderAdmin(admin.ModelAdmin):
         return ['order_number', 'description', 'customer', 'date_time_edited', 'total_price', 'number_of_items', 'items']
 
 
+class OrderRecordAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ("General Info", {"fields": ("order_number", "customer", "date_time_edited", "description", "number_of_items")}),
+        #("Order Items", {"fields": ("items",)}),
+    )
+    list_display = ("customer", "date_time_edited",)
+    search_fields = ("customer", "date_time_edited", "description",)
+    ordering = ("-date_time_edited",)
+
+    def number_of_items(self, obj):
+        return len(obj.orderitemrecord_set.all())
+
+    def order_number(self, obj):
+        return obj.id
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderRecord, OrderRecordAdmin)

@@ -1,12 +1,12 @@
 from operator import index
 
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils import timezone
 
 from apps.accounts.models import Customer
-from apps.menu.models import Food, FoodPortion, Topping
+from apps.menu.models import Food, FoodPortion, Topping, FoodPortionRecord, ToppingRecord
 from django.contrib.auth.models import User
 
 
@@ -74,3 +74,25 @@ class OrderItem(AbstractOrderItem):
 
     def __str__(self):
         return f"{self.order.__str__()} - {self.food_portion.food.name}"
+
+
+# Records
+class OrderRecord(AbstractOrder):
+    class Meta:
+        verbose_name = "Order Record"
+        verbose_name_plural = "Order Records"
+
+
+class OrderItemRecord(AbstractOrder):
+    discount = models.FloatField(null=True, validators=[MinValueValidator(0), MaxValueValidator(1)])
+    price = models.IntegerField(blank=False, null=False, validators=[MinValueValidator(1)])
+    coupons_used = models.IntegerField(null=True, default=0, validators=[MinValueValidator(0)])
+
+    order = models.ForeignKey(OrderRecord, on_delete=models.SET_NULL, null=True)
+    food_portion = models.ForeignKey(FoodPortionRecord, on_delete=models.SET_NULL, null=True)
+
+
+class OrderItemToppingRecord(models.Model):
+    topping = models.ForeignKey(ToppingRecord, null=True, on_delete=models.SET_NULL)
+    order_item = models.ForeignKey(OrderItemRecord, null=True, on_delete=models.SET_NULL)
+    price = models.IntegerField(blank=False, null=False, validators=[MinValueValidator(1)])
