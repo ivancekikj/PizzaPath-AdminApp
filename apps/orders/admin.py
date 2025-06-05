@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.utils import timezone
 from django.utils.html import format_html
 
-from .models import Order, OrderRecord
+from .models import Order, OrderRecord, OrderItemRecord, OrderItemToppingRecord
 
 
 class OrderAdmin(admin.ModelAdmin):
@@ -68,6 +68,31 @@ class OrderAdmin(admin.ModelAdmin):
         obj.date_time_edited = timezone.now()
         obj.save()
         if obj.status == Order.STATUS_CHOICES[4][0]:
+            order_record = OrderRecord(
+                id=obj.id,
+                customer=obj.customer,
+                date_time_edited=obj.date_time_edited,
+                description=obj.description
+            )
+            order_record.save()
+            for item in obj.orderitem_set.all():
+                item_record = OrderItemRecord(
+                    id=item.id,
+                    order=order_record,
+                    food_portion_id=item.food_portion.id,
+                    quantity=item.quantity,
+                    discount=item.food_portion.discount,
+                    price=item.food_portion.price,
+                    coupons_used=0
+                )
+                item_record.save()
+                for topping in item.toppings.all():
+                    item_topping_record = OrderItemToppingRecord(
+                        topping_id=topping.id,
+                        order_item=item_record,
+                        price=topping.price
+                    )
+                    item_topping_record.save()
             obj.delete()
 
     def get_readonly_fields(self, request, obj=None):

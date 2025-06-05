@@ -20,7 +20,7 @@ class AbstractOrder(models.Model):
 
 
 class AbstractOrderItem(models.Model):
-    quantity = models.IntegerField(null=False, validators=[MinValueValidator(1)])
+    quantity = models.IntegerField(null=False, validators=[MinValueValidator(1)], default=1)
 
     class Meta:
         abstract = True
@@ -83,7 +83,7 @@ class OrderRecord(AbstractOrder):
         verbose_name_plural = "Order Records"
 
 
-class OrderItemRecord(AbstractOrder):
+class OrderItemRecord(AbstractOrderItem):
     discount = models.FloatField(null=True, validators=[MinValueValidator(0), MaxValueValidator(1)])
     price = models.IntegerField(blank=False, null=False, validators=[MinValueValidator(1)])
     coupons_used = models.IntegerField(null=True, default=0, validators=[MinValueValidator(0)])
