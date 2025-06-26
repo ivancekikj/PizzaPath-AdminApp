@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from apps.accounts.models import Customer, CouponReward
+from apps.orders.models import OrderItem
 
 
 class CouponRewardSerializer(serializers.ModelSerializer):
@@ -18,6 +19,9 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     def get_coupons(self, obj):
         coupons = CouponReward.objects.filter(customer_id=obj.id)
+        order_items = OrderItem.objects.filter(order__customer_id=obj.id,are_coupons_used=True)
+        for item in order_items:
+            coupons.get(food_portion_id=item.food_portion_id).count -= item.quantity * item.food_portion.coupon_value
         return CouponRewardSerializer(coupons, many=True).data
 
     def create(self, data):

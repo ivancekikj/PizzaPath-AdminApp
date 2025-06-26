@@ -15,6 +15,7 @@ class OrderItemView(APIView):
     def post(self, request, *args, **kwargs):
         quantity = request.data.get('quantity', None)
         food_portion_id = request.data.get('food_portion_id', None)
+        are_coupons_used = request.data.get('are_coupons_used', False)
         toppings_ids = request.data.get('toppings_ids', [])
         user_id = request.user.id
 
@@ -37,6 +38,7 @@ class OrderItemView(APIView):
             quantity=quantity,
             order=order,
             food_portion=food_portion,
+            are_coupons_used=are_coupons_used,
         )
         order_item.save()
         order_item.toppings.add(*toppings)
