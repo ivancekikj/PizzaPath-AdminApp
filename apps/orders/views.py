@@ -154,14 +154,14 @@ class OrderCouponRewardView(APIView):
         if order is None:
             return Response(None, status=200)
         earned_coupons, redeemed_coupons = 0, 0
-        coupons = CouponReward.objects.filter(customer_id=user_id)
+        coupon_by_portion = {coupon.food_portion_id: coupon for coupon in CouponReward.objects.filter(customer_id=user_id)}
         order_items = OrderItem.objects.filter(order__customer_id=user_id,are_coupons_used=True)
         for item in order_items:
             redeemed_coupons += item.quantity * item.food_portion.coupon_value
             earned_coupons += item.quantity
-            coupons.get(food_portion_id=item.food_portion_id).count -= item.quantity * item.food_portion.coupon_value
+            coupon_by_portion[item.food_portion_id].count -= item.quantity * item.food_portion.coupon_value
         return Response({
-            "coupons": CouponRewardSerializer(coupons, many=True).data,
+            "coupons": CouponRewardSerializer(list(coupon_by_portion.values()), many=True).data,
             "earned_coupons": earned_coupons,
             "redeemed_coupons": redeemed_coupons,
         }, status=200)
