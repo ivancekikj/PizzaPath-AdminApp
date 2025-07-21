@@ -1,6 +1,13 @@
 from rest_framework import serializers
 
-from apps.accounts.models import Customer
+from apps.accounts.models import Customer, CouponReward
+from apps.orders.models import OrderItem
+
+
+class CouponRewardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CouponReward
+        fields = ['food_portion_id', 'count']
 
 
 class CustomerSerializer(serializers.ModelSerializer):

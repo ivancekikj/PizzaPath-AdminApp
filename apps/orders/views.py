@@ -1,9 +1,11 @@
-from datetime import datetime
+from django.utils import timezone
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.accounts.models import CouponReward
+from apps.accounts.serializers import CouponRewardSerializer
 from apps.menu.models import FoodPortion, Topping
 from apps.orders.models import Order, OrderItem
 from apps.orders.serialiers import OrderSerializer
@@ -15,6 +17,7 @@ class OrderItemView(APIView):
     def post(self, request, *args, **kwargs):
         quantity = request.data.get('quantity', None)
         food_portion_id = request.data.get('food_portion_id', None)
+        are_coupons_used = request.data.get('are_coupons_used', False)
         toppings_ids = request.data.get('toppings_ids', [])
         user_id = request.user.id
 
@@ -28,7 +31,7 @@ class OrderItemView(APIView):
         toppings = Topping.objects.filter(id__in=toppings_ids) if toppings_ids and len(toppings_ids) > 0 else []
 
         if order is None:
-            order = Order.objects.create(customer_id=user_id, date_time_edited=datetime.now())
+            order = Order.objects.create(customer_id=user_id, date_time_edited=timezone.now())
             order.save()
         elif not check_if_editable(order):
             return Response("order is not editable.", status=400)
@@ -37,6 +40,7 @@ class OrderItemView(APIView):
             quantity=quantity,
             order=order,
             food_portion=food_portion,
+            are_coupons_used=are_coupons_used,
         )
         order_item.save()
         order_item.toppings.add(*toppings)
@@ -48,6 +52,7 @@ class OrderItemView(APIView):
         item_id = kwargs.get('id')
         quantity = request.data.get('quantity', None)
         food_portion_id = request.data.get('food_portion_id', None)
+        are_coupons_used = request.data.get('are_coupons_used', None)
         toppings_ids = request.data.get('toppings_ids', [])
         user_id = request.user.id
 
@@ -55,6 +60,8 @@ class OrderItemView(APIView):
             return Response("quantity expected.", status=400)
         if food_portion_id is None:
             return Response("food_portion_id expected.", status=400)
+        if are_coupons_used is None:
+            return Response("are_coupons_used expected.", status=400)
 
         order = get_current_order(user_id)
         if not check_if_editable(order):
@@ -66,6 +73,7 @@ class OrderItemView(APIView):
 
         order_item.quantity = quantity
         order_item.food_portion = FoodPortion.objects.get(id=food_portion_id)
+        order_item.are_coupons_used = are_coupons_used
         order_item.toppings.clear()
         toppings = Topping.objects.filter(id__in=toppings_ids) if toppings_ids and len(toppings_ids) > 0 else []
         order_item.toppings.add(*toppings)
@@ -141,6 +149,28 @@ class CurrentOrderView(APIView):
         return Response(status=200)
 
 
+class OrderCouponRewardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.user.id
+        order = get_current_order(user_id)
+        if order is None:
+            return Response(None, status=200)
+        earned_coupons, redeemed_coupons = 0, 0
+        coupon_by_portion = {coupon.food_portion_id: coupon for coupon in CouponReward.objects.filter(customer_id=user_id)}
+        order_items = OrderItem.objects.filter(order__customer_id=user_id,are_coupons_used=True)
+        for item in order_items:
+            redeemed_coupons += item.quantity * item.food_portion.coupon_value
+            earned_coupons += item.quantity
+            coupon_by_portion[item.food_portion_id].count -= item.quantity * item.food_portion.coupon_value
+        return Response({
+            "coupons": CouponRewardSerializer(list(coupon_by_portion.values()), many=True).data,
+            "earned_coupons": earned_coupons,
+            "redeemed_coupons": redeemed_coupons,
+        }, status=200)
+
+
 def check_if_editable(order: Order):
     if order.status == Order.STATUS_CHOICES[0][0]:
         return True
@@ -148,7 +178,7 @@ def check_if_editable(order: Order):
 
 
 def update_order_date(order: Order):
-    order.date_time_edited = datetime.now()
+    order.date_time_edited = timezone.now()
 
 
 def get_current_order(user_id):

@@ -4,21 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
-from apps.accounts.models import Customer
-from apps.accounts.serializers import CustomerSerializer
+from apps.accounts.models import Customer, CouponReward
+from apps.accounts.serializers import CustomerSerializer, CouponRewardSerializer
 
 
 class CustomerView(APIView):
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [AllowAny()]
-        return [IsAuthenticated()]
-
-    def get(self, request):
-        user_id = request.user.id
-        customer = Customer.objects.get(id=user_id)
-        serializer = CustomerSerializer(customer)
-        return Response(serializer.data)
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = CustomerSerializer(data=request.data)
@@ -26,6 +17,16 @@ class CustomerView(APIView):
             serializer.save()
             return Response(status=200)
         return Response(serializer.errors, status=400)
+
+
+class CurrentCustomerView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.id
+        customer = Customer.objects.get(id=user_id)
+        serializer = CustomerSerializer(customer)
+        return Response(serializer.data)
 
 
 class LoginView(APIView):
@@ -68,3 +69,13 @@ class LogoutView(APIView):
         response.delete_cookie("jwt")
         response.delete_cookie("refresh_token")
         return response
+
+
+class CouponRewardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.id
+        coupons = CouponReward.objects.filter(customer_id=user_id)
+        serializer = CouponRewardSerializer(coupons, many=True)
+        return Response(serializer.data)
