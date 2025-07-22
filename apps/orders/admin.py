@@ -137,43 +137,61 @@ class OrderAdmin(admin.ModelAdmin):
 
 class OrderRecordAdmin(admin.ModelAdmin):
     fieldsets = (
-        ("General Info", {"fields": ("order_number", "customer", "date_time_edited", "description", "number_of_items", "total_price")}),
+        ("General Info", {"fields": ("order_number", "customer", "date_time_edited", "description", "number_of_items", "number_of_earned_coupons", "number_of_redeemed_coupons", "total_price")}),
         ("Order Items", {"fields": ("items",)}),
     )
     list_display = ("customer", "date_time_edited",)
     search_fields = ("customer__username", "date_time_edited", "description",)
     ordering = ("-date_time_edited",)
 
+    def number_of_earned_coupons(self, obj):
+        total = 0
+        for item in obj.orderitemrecord_set.all():
+            if item.coupons_used > 0:
+                total += item.quantity
+        return total
+
+    def number_of_redeemed_coupons(self, obj):
+        total = 0
+        for item in obj.orderitemrecord_set.all():
+            total += item.coupons_used
+        return total
+
     def items(self, obj):
         result = ""
         for i, item in enumerate(obj.orderitemrecord_set.all().order_by("-date_time_created"), start=1):
             digits_space = '&nbsp;' * (len(str(i)) + 3)
-            item_price = item.price
+            item_price = 0 if item.coupons_used > 0 else item.price
             result += f"{i}. Food name: {item.food_portion.food.name}</br>"
             result += f"{digits_space}Food portion: {item.food_portion.size.name} ({item.price} ден)</br>"
             result += f"{digits_space}Quantity: {item.quantity}</br>"
+            result += f"{digits_space}Number of coupons used: {item.coupons_used}</br>"
+            result += f"{digits_space}Number of coupons earned: {0 if item.coupons_used == 0 else item.quantity}</br>"
             if item.discount > 0:
                 result += f"{digits_space}Discount: {int(item.discount * 100)}%</br>"
             if item.orderitemtoppingrecord_set.exists():
                 result += f"{digits_space}Toppings:</br>"
                 for j, topping in enumerate(item.orderitemtoppingrecord_set.all(), start=1):
                     result += f"{digits_space}{'&nbsp;' * 4}{j}. {topping.topping.name} ({topping.price} ден)</br>"
-                    item_price += topping.price
-            item_price *= item.quantity
-            item_price *= (1 - item.discount) if item.discount > 0 else 1
-            item_price = math.ceil(item_price)
+                    if item.coupons_used == 0:
+                        item_price += topping.price
+            if item.coupons_used == 0:
+                item_price *= item.quantity
+                item_price *= (1 - item.discount) if item.discount > 0 else 1
+                item_price = math.ceil(item_price)
             result += f"{digits_space}Item price: {item_price} ден</br></br>"
         return format_html(result)
 
     def total_price(self, obj):
         total = 0
         for item in obj.orderitemrecord_set.all():
-            item_cost = item.price
-            for topping in item.orderitemtoppingrecord_set.all():
-                item_cost += topping.price
-            item_cost *= item.quantity
-            if item.discount > 0:
-                item_cost *= (1 - item.discount)
+            item_cost = 0 if item.coupons_used > 0 else item.price
+            if item.coupons_used == 0:
+                for topping in item.orderitemtoppingrecord_set.all():
+                    item_cost += topping.price
+                item_cost *= item.quantity
+                if item.discount > 0:
+                    item_cost *= (1 - item.discount)
             total += math.ceil(item_cost)
         return f"{total} ден"
 
