@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 
 from .models import Order, OrderRecord, OrderItemRecord, OrderItemToppingRecord
+from ..accounts.models import CouponReward
 
 
 class OrderAdmin(admin.ModelAdmin):
@@ -88,6 +89,7 @@ class OrderAdmin(admin.ModelAdmin):
         obj.date_time_edited = timezone.now()
         obj.save()
         if obj.status == Order.STATUS_CHOICES[4][0]:
+            # Convert order, items and toppings to records
             order_record = OrderRecord(
                 id=obj.id,
                 customer=obj.customer,
@@ -95,6 +97,7 @@ class OrderAdmin(admin.ModelAdmin):
                 description=obj.description
             )
             order_record.save()
+            items_with_coupons = []
             for item in obj.orderitem_set.all():
                 item_record = OrderItemRecord(
                     id=item.id,
@@ -104,7 +107,7 @@ class OrderAdmin(admin.ModelAdmin):
                     quantity=item.quantity,
                     discount=item.food_portion.discount,
                     price=item.food_portion.price,
-                    coupons_used=0
+                    coupons_used=0 if not item.are_coupons_used else item.quantity * item.food_portion.coupon_value
                 )
                 item_record.save()
                 for topping in item.toppings.all():
@@ -114,6 +117,18 @@ class OrderAdmin(admin.ModelAdmin):
                         price=topping.price
                     )
                     item_topping_record.save()
+                if item.are_coupons_used:
+                    items_with_coupons.append(item)
+            # Update coupon counts
+            portion_ids = {item.food_portion_id for item in items_with_coupons}
+            coupon_by_portion = {coupon.food_portion_id: coupon for coupon in CouponReward.objects.filter(customer_id=obj.customer_id,food_portion_id__in=portion_ids)}
+            for item in items_with_coupons:
+                coupon = coupon_by_portion.get(item.food_portion_id)
+                coupon.count -= item.quantity * item.food_portion.coupon_value
+                coupon.count += item.quantity
+            for coupon in coupon_by_portion.values():
+                coupon.save()
+            # Cascade delete active order
             obj.delete()
 
     def get_readonly_fields(self, request, obj=None):
