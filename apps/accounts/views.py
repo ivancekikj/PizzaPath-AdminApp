@@ -76,6 +76,27 @@ class CouponRewardView(APIView):
 
     def get(self, request):
         user_id = request.user.id
-        coupons = CouponReward.objects.filter(customer_id=user_id)
+        group_by_category = request.query_params.get('group_by_category', None)
+        group_by_category = bool(group_by_category) if group_by_category else False
+
+        coupons = list(CouponReward.objects.filter(customer_id=user_id))
+        if group_by_category:
+            coupons_by_category = {}
+            for coupon in coupons:
+                category_id = coupon.food_portion.food.category_id
+                if category_id not in coupons_by_category:
+                    coupons_by_category[category_id] = {
+                        "name": coupon.food_portion.food.category.name,
+                        "coupons": []
+                    }
+                coupons_by_category[category_id]["coupons"].append({
+                    "food_portion_id": coupon.food_portion_id,
+                    "food_name": coupon.food_portion.food.name,
+                    "size_name": coupon.food_portion.size.name,
+                    "earned_count": coupon.count,
+                    "required_amount_for_one_portion": coupon.food_portion.coupon_value,
+                })
+            return Response(coupons_by_category, status=200)
+
         serializer = CouponRewardSerializer(coupons, many=True)
         return Response(serializer.data)
