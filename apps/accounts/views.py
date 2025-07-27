@@ -1,11 +1,12 @@
 from django.contrib.auth import authenticate
+from django.core.paginator import Paginator, EmptyPage
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
-from apps.accounts.models import Customer, CouponReward
-from apps.accounts.serializers import CustomerSerializer, CouponRewardSerializer
+from apps.accounts.models import Customer, CouponReward, NewsletterPost
+from apps.accounts.serializers import CustomerSerializer, CouponRewardSerializer, NewsletterPostSerializer
 
 
 class CustomerView(APIView):
@@ -100,3 +101,37 @@ class CouponRewardView(APIView):
 
         serializer = CouponRewardSerializer(coupons, many=True)
         return Response(serializer.data)
+
+
+class NewsletterPostsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.id
+        page = request.query_params.get('page', None)
+
+        if page is None:
+            return Response("page expected.", status=400)
+        page = int(page)
+        page = max(page, 1)
+
+        posts = Customer.objects.get(id=user_id).received_posts.all().order_by('-date')
+        paginator = Paginator(posts, 4)
+
+        try:
+            paginated_posts = paginator.page(page)
+        except EmptyPage:
+            paginated_posts = []
+
+        serialized_posts = NewsletterPostSerializer(paginated_posts, many=True).data
+        return Response(serialized_posts, status=200)
+
+
+class NewsletterPostsCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.id
+        number = Customer.objects.get(id=user_id).received_posts.all().count()
+        return Response(number, status=200)
+
