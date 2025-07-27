@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.accounts.models import Customer, CouponReward
+from apps.accounts.models import Customer, CouponReward, NewsletterPost
 from apps.orders.models import OrderItem
 
 
@@ -18,3 +18,9 @@ class CustomerSerializer(serializers.ModelSerializer):
     def create(self, data):
         user = Customer.objects.create_user(**data)
         return user
+
+
+class NewsletterPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewsletterPost
+        fields = "__all__"
