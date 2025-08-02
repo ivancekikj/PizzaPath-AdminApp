@@ -29,6 +29,27 @@ class CurrentCustomerView(APIView):
         serializer = CustomerSerializer(customer)
         return Response(serializer.data)
 
+    def put(self, request):
+        data = {
+            "username": request.data.get("username"),
+            "address": request.data.get("address"),
+            "first_name": request.data.get("first_name"),
+            "last_name": request.data.get("last_name"),
+            "phone_number": request.data.get("phone_number"),
+            "is_subscribed_to_newsletter": request.data.get("is_subscribed_to_newsletter"),
+        }
+        for key, value in data.items():
+            if value is None:
+                return Response(f"{key} expected.", status=400)
+
+        user_id = request.user.id
+        customer = Customer.objects.get(id=user_id)
+        serializer = CustomerSerializer(instance=customer, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        return Response(serializer.errors, status=400)
+
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
