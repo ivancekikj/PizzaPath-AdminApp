@@ -7,6 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from apps.accounts.models import Customer, CouponReward, NewsletterPost
 from apps.accounts.serializers import CustomerSerializer, CouponRewardSerializer, NewsletterPostSerializer
+from apps.menu.models import FoodRecord
+from apps.orders.models import OrderItemRecord
 
 
 class CustomerView(APIView):
@@ -81,6 +83,16 @@ class LoginView(APIView):
         )
 
         return response
+
+class CustomerOrderedFoodsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.id
+        food_ids = FoodRecord.objects.filter(
+            foodportionrecord__orderitemrecord__isnull=False
+        ).values_list('id', flat=True).distinct()
+        return Response(list(food_ids), status=200)
 
 
 class LogoutView(APIView):

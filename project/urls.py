@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 
 from apps.accounts.views import CustomerView, LogoutView, LoginView, CouponRewardView, CurrentCustomerView, \
-    NewsletterPostsView, NewsletterPostsCountView
+    NewsletterPostsView, NewsletterPostsCountView, CustomerOrderedFoodsView
 from apps.menu.views import CategoryViewSet, FoodViewSet, FoodPortionView
 from apps.orders.views import OrderItemView, CurrentOrderView, OrderCouponRewardView
 
@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/orders/current-order/coupon-info', OrderCouponRewardView.as_view()),
     path('api/accounts/customers/', CustomerView.as_view()),
     path('api/accounts/customers/logged-in-customer/', CurrentCustomerView.as_view()),
+    path('api/accounts/customers/logged-in-customer/ordered-foods/ids/', CustomerOrderedFoodsView.as_view()),
     path('api/accounts/customers/logged-in-customer/coupons/', CouponRewardView.as_view()),
     path('api/accounts/login/', LoginView.as_view()),
     path('api/accounts/logout/', LogoutView.as_view()),
