@@ -90,7 +90,7 @@ class CustomerOrderedFoodsView(APIView):
     def get(self, request):
         user_id = request.user.id
         food_ids = FoodRecord.objects.filter(
-            foodportionrecord__orderitemrecord__isnull=False
+            foodportionrecord__orderitemrecord__order__customer_id=user_id
         ).values_list('id', flat=True).distinct()
         return Response(list(food_ids), status=200)
 
