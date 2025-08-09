@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from apps.accounts.models import Customer, CouponReward, NewsletterPost
-from apps.orders.models import OrderItem
+from apps.menu.models import Rating
 
 
 class CouponRewardSerializer(serializers.ModelSerializer):
@@ -24,3 +24,9 @@ class NewsletterPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsletterPost
         fields = "__all__"
+
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ("food_id", "value",)

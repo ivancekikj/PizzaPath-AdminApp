@@ -3,12 +3,12 @@ from django.core.paginator import Paginator, EmptyPage
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.accounts.models import Customer, CouponReward, NewsletterPost
-from apps.accounts.serializers import CustomerSerializer, CouponRewardSerializer, NewsletterPostSerializer
-from apps.menu.models import FoodRecord
-from apps.orders.models import OrderItemRecord
+from apps.accounts.serializers import CustomerSerializer, CouponRewardSerializer, NewsletterPostSerializer, \
+    RatingSerializer
+from apps.menu.models import FoodRecord, Rating
 
 
 class CustomerView(APIView):
@@ -83,6 +83,7 @@ class LoginView(APIView):
         )
 
         return response
+
 
 class CustomerOrderedFoodsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -168,3 +169,48 @@ class NewsletterPostsCountView(APIView):
         number = Customer.objects.get(id=user_id).received_posts.all().count()
         return Response(number, status=200)
 
+
+class RatingView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.user.id
+        ratings = Rating.objects.filter(customer_id=user_id)
+        serialized_data = RatingSerializer(ratings, many=True).data
+        return Response(serialized_data, status=200)
+
+    def put(self, request, *args, **kwargs):
+        user_id = request.user.id
+        value = request.data.get('value')
+        food_id = request.query_params.get('food_id')
+
+        if value is None:
+            return Response("value expected.", status=400)
+        if food_id is None:
+            return Response("food_id expected.", status=400)
+        if type(value) is not int or value < 1 or value > 5:
+            return Response("value must be an integer between 1 and 5.", status=400)
+        food_id = int(food_id)
+
+        rating = Rating.objects.filter(customer_id=user_id, food_id=food_id).first()
+        if rating:
+            rating.value = value
+        else:
+            rating = Rating.objects.create(customer_id=user_id, value=value, food_id=food_id)
+        rating.save()
+
+        return Response(status=200)
+
+    def delete(self, request, *args, **kwargs):
+        user_id = request.user.id
+        food_id = request.query_params.get('food_id')
+
+        if food_id is None:
+            return Response("food_id expected.", status=400)
+
+        rating = Rating.objects.filter(customer_id=user_id, food_id=food_id).first()
+        if not rating:
+            return Response("Rating not found.", status=404)
+
+        rating.delete()
+        return Response(status=200)
