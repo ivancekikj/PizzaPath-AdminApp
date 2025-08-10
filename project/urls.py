@@ -6,7 +6,7 @@ from rest_framework.routers import DefaultRouter
 
 from apps.accounts.views import CustomerView, LogoutView, LoginView, CouponRewardView, CurrentCustomerView, \
     NewsletterPostsView, NewsletterPostsCountView, CustomerOrderedFoodsView, RatingView
-from apps.menu.views import CategoryViewSet, FoodViewSet, FoodPortionView
+from apps.menu.views import CategoryViewSet, FoodViewSet, FoodPortionView, FoodAverageRatingView
 from apps.orders.views import OrderItemView, CurrentOrderView, OrderCouponRewardView
 
 router = DefaultRouter()
@@ -15,8 +15,9 @@ router.register(r"menu/foods", FoodViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
     path('api/menu/food-portions/', FoodPortionView.as_view()),
+    path('api/menu/foods/average-ratings/', FoodAverageRatingView.as_view()),
+    path('api/menu/foods/<int:food_id>/average-rating/', FoodAverageRatingView.as_view()),
     path('api/orders/current-order/items/', OrderItemView.as_view()),
     path('api/orders/current-order/items/<int:id>/', OrderItemView.as_view()),
     path('api/orders/current-order/', CurrentOrderView.as_view()),
@@ -30,4 +31,5 @@ urlpatterns = [
     path('api/accounts/logout/', LogoutView.as_view()),
     path('api/accounts/customers/received-posts/', NewsletterPostsView.as_view()),
     path('api/accounts/customers/received-posts/count/', NewsletterPostsCountView.as_view()),
+    path('api/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
