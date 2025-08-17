@@ -6,7 +6,7 @@ from rest_framework.routers import DefaultRouter
 
 from apps.accounts.views import CustomerView, LogoutView, LoginView, CouponRewardView, CurrentCustomerView, \
     NewsletterPostsView, NewsletterPostsCountView, CustomerOrderedFoodsView, RatingView
-from apps.menu.views import CategoryViewSet, FoodViewSet, FoodPortionView, FoodAverageRatingView
+from apps.menu.views import CategoryViewSet, FoodViewSet, FoodPortionView, FoodAverageRatingView, PopularFoodsView
 from apps.orders.views import OrderItemView, CurrentOrderView, OrderCouponRewardView
 
 router = DefaultRouter()
@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/menu/food-portions/', FoodPortionView.as_view()),
     path('api/menu/foods/average-ratings/', FoodAverageRatingView.as_view()),
     path('api/menu/foods/<int:food_id>/average-rating/', FoodAverageRatingView.as_view()),
+    path('api/menu/most-popular-foods/', PopularFoodsView.as_view()),
     path('api/orders/current-order/items/', OrderItemView.as_view()),
     path('api/orders/current-order/items/<int:id>/', OrderItemView.as_view()),
     path('api/orders/current-order/', CurrentOrderView.as_view()),
