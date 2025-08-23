@@ -40,9 +40,9 @@ class FoodAdmin(admin.ModelAdmin):
 
 
 class FoodPortionAdmin(admin.ModelAdmin):
-    fields = ["food", "size", "price", "discount", "coupon_value", "is_available"]
-    list_display = ["food", "food__category", "size", "is_available"]
-    list_filter = ["size", "is_available", "food__category"]
+    fields = ["food", "size", "price", "discount", "coupon_value"]
+    list_display = ["food", "food__category", "size"]
+    list_filter = ["size", "food__category"]
     search_fields = ["food__name", "price", "discount", "coupon_value"]
     ordering = ["food__category", "food__name", "size"]
 
