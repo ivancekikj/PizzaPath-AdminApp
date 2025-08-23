@@ -52,31 +52,3 @@ class CouponReward(models.Model):
 
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     food_portion = models.ForeignKey(FoodPortion, on_delete=models.SET_NULL, null=True)
-
-
-class WorkingDay(models.Model):
-    OPENING_TIME = "08:00"
-    CLOSING_TIME = "16:00"
-    NON_WORKING_DAYS = ("Saturday", "Sunday")
-
-    date = models.DateField(null=False, blank=False, unique=True)
-    is_working_day = models.BooleanField(default=True, blank=False, null=False)
-    start_time = models.TimeField(null=True, blank=True, default=OPENING_TIME)
-    end_time = models.TimeField(null=True, blank=True, default=CLOSING_TIME)
-
-    class Meta:
-        verbose_name = "Working Day"
-        verbose_name_plural = "Working Days"
-
-    def clean(self):
-        if self.date <= timezone.now().date():
-            raise ValidationError({'date': 'Date must be in the future.'})
-        if self.start_time and self.end_time and self.start_time >= self.end_time:
-            raise ValidationError({'start_time': 'Start time must be before end time.'})
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.date.__str__()

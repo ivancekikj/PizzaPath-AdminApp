@@ -75,7 +75,6 @@ class FoodPortion(models.Model):
     price = models.IntegerField(blank=False, null=False, validators=[MinValueValidator(1)])
     discount = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(1)])
     coupon_value = models.IntegerField(blank=False, null=False, validators=[MinValueValidator(1)])
-    is_available = models.BooleanField(default=True, blank=False, null=False)
 
     size = models.ForeignKey(Size, null=True, blank=False, on_delete=models.SET_NULL)
     food = models.ForeignKey(Food, null=True, blank=False, on_delete=models.SET_NULL)
