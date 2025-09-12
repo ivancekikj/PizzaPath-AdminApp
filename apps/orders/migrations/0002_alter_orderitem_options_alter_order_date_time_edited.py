@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orders', '0001_initial'),
+        ("orders", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='orderitem',
-            options={'verbose_name': 'Order Item', 'verbose_name_plural': 'Order Items'},
+            name="orderitem",
+            options={"verbose_name": "Order Item", "verbose_name_plural": "Order Items"},
         ),
         migrations.AlterField(
-            model_name='order',
-            name='date_time_edited',
+            model_name="order",
+            name="date_time_edited",
             field=models.DateTimeField(),
         ),
     ]

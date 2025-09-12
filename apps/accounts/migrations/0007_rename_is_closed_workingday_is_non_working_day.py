@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0006_alter_workingday_date'),
+        ("accounts", "0006_alter_workingday_date"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='workingday',
-            old_name='is_closed',
-            new_name='is_non_working_day',
+            model_name="workingday",
+            old_name="is_closed",
+            new_name="is_non_working_day",
         ),
     ]

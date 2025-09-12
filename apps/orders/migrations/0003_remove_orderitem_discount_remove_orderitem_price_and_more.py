@@ -6,21 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orders', '0002_alter_orderitem_options_alter_order_date_time_edited'),
+        ("orders", "0002_alter_orderitem_options_alter_order_date_time_edited"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='orderitem',
-            name='discount',
+            model_name="orderitem",
+            name="discount",
         ),
         migrations.RemoveField(
-            model_name='orderitem',
-            name='price',
+            model_name="orderitem",
+            name="price",
         ),
         migrations.AlterField(
-            model_name='order',
-            name='status',
-            field=models.CharField(choices=[('edit', 'Being edited.'), ('submitted', 'Submitted and awaiting processing.'), ('preparation', 'Currently being prepared.'), ('delivery', 'Currently being delivered.')], default='edit', max_length=100),
+            model_name="order",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("edit", "Being edited."),
+                    ("submitted", "Submitted and awaiting processing."),
+                    ("preparation", "Currently being prepared."),
+                    ("delivery", "Currently being delivered."),
+                ],
+                default="edit",
+                max_length=100,
+            ),
         ),
     ]

@@ -8,73 +8,98 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0010_alter_customer_phone_number'),
-        ('menu', '0004_alter_foodportion_options'),
+        ("accounts", "0010_alter_customer_phone_number"),
+        ("menu", "0004_alter_foodportion_options"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CategoryRecord',
+            name="CategoryRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
             options={
-                'verbose_name_plural': 'Categories',
-                'abstract': False,
+                "verbose_name_plural": "Categories",
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='SizeRecord',
+            name="SizeRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='ToppingRecord',
+            name="ToppingRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='FoodRecord',
+            name="FoodRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.TextField()),
-                ('image', models.ImageField(upload_to='food_record_photos')),
-                ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.categoryrecord')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
+                ("description", models.TextField()),
+                ("image", models.ImageField(upload_to="food_record_photos")),
+                (
+                    "category",
+                    models.ForeignKey(
+                        null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.categoryrecord"
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='RatingRecord',
+            name="RatingRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.IntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(5)])),
-                ('customer', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.customer')),
-                ('food', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.foodrecord')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "value",
+                    models.IntegerField(
+                        validators=[
+                            django.core.validators.MinValueValidator(1),
+                            django.core.validators.MaxValueValidator(5),
+                        ]
+                    ),
+                ),
+                (
+                    "customer",
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="accounts.customer"),
+                ),
+                (
+                    "food",
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.foodrecord"),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='FoodPortionRecord',
+            name="FoodPortionRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('food', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.foodrecord')),
-                ('size', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.sizerecord')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "food",
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.foodrecord"),
+                ),
+                (
+                    "size",
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.sizerecord"),
+                ),
             ],
         ),
     ]

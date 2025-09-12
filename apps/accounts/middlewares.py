@@ -11,8 +11,8 @@ class RestrictApiAccessMiddleware:
 
     def __call__(self, request):
         if not settings.DEBUG:
-            if request.path.startswith('/api/'):
-                origin = request.META.get('HTTP_ORIGIN')
+            if request.path.startswith("/api/"):
+                origin = request.META.get("HTTP_ORIGIN")
                 allowed_origins = settings.CORS_ALLOWED_ORIGINS
                 if origin is None or origin not in allowed_origins:
                     return HttpResponseForbidden("Access denied")
@@ -27,7 +27,9 @@ class JWTAuthMiddleware:
     def __call__(self, request):
         jwt_token = request.COOKIES.get("jwt")
         if jwt_token:
-            request.META["HTTP_AUTHORIZATION"] = f"Bearer {request.new_access_token if getattr(request, 'refresh_token_used', False) else jwt_token}"
+            request.META["HTTP_AUTHORIZATION"] = (
+                f"Bearer {request.new_access_token if getattr(request, 'refresh_token_used', False) else jwt_token}"
+            )
         return self.get_response(request)
 
 

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0005_alter_newsletterpost_options_and_more'),
+        ("accounts", "0005_alter_newsletterpost_options_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='workingday',
-            name='date',
+            model_name="workingday",
+            name="date",
             field=models.DateField(unique=True),
         ),
     ]

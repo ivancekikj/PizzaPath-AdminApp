@@ -1,19 +1,26 @@
 from django.contrib import admin
-from django.utils import timezone
 
-from apps.accounts.models import Customer, CouponReward, NewsletterPost, User
+from apps.accounts.models import CouponReward, Customer, NewsletterPost, User
 
 
 class EmployeeAdmin(admin.ModelAdmin):
     fieldsets = (
-        ("Account Info", {"fields": ("username", "email", "is_email_confirmed", "is_active", "date_joined", "last_login")}),
+        (
+            "Account Info",
+            {"fields": ("username", "email", "is_email_confirmed", "is_active", "date_joined", "last_login")},
+        ),
         ("Personal Info", {"fields": ("first_name", "last_name")}),
         ("Privileges", {"fields": ("is_superuser", "groups", "user_permissions")}),
     )
     readonly_fields = ("date_joined", "last_login")
     list_display = ("username", "email", "first_name", "last_name", "is_superuser")
     list_filter = ("is_superuser", "is_active", "is_email_confirmed", "groups")
-    search_fields = ("username", "email", "first_name", "last_name",)
+    search_fields = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+    )
 
     def get_queryset(self, request):
         return super().get_queryset(request).filter(is_staff=True)
@@ -39,7 +46,12 @@ class CustomerAdmin(admin.ModelAdmin):
         ("Rewards", {"fields": ("coupons",)}),
         ("Newsletter", {"fields": ("is_subscribed_to_newsletter", "received_posts")}),
     )
-    list_display = ("username", "email", "first_name", "last_name",)
+    list_display = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+    )
     list_filter = ("is_subscribed_to_newsletter", "is_email_confirmed")
     search_fields = ("username", "email", "first_name", "last_name", "address", "phone_number")
 

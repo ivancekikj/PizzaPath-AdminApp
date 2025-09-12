@@ -8,61 +8,92 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0010_alter_customer_phone_number'),
-        ('menu', '0005_categoryrecord_sizerecord_toppingrecord_foodrecord_and_more'),
-        ('orders', '0006_alter_order_status'),
+        ("accounts", "0010_alter_customer_phone_number"),
+        ("menu", "0005_categoryrecord_sizerecord_toppingrecord_foodrecord_and_more"),
+        ("orders", "0006_alter_order_status"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='order',
-            options={'verbose_name': 'Active Order', 'verbose_name_plural': 'Active Orders'},
+            name="order",
+            options={"verbose_name": "Active Order", "verbose_name_plural": "Active Orders"},
         ),
         migrations.AlterModelOptions(
-            name='orderitem',
+            name="orderitem",
             options={},
         ),
         migrations.CreateModel(
-            name='OrderItemRecord',
+            name="OrderItemRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.TextField(null=True)),
-                ('date_time_edited', models.DateTimeField()),
-                ('discount', models.FloatField(null=True, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(1)])),
-                ('price', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
-                ('coupons_used', models.IntegerField(default=0, null=True, validators=[django.core.validators.MinValueValidator(0)])),
-                ('customer', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.customer')),
-                ('food_portion', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.foodportionrecord')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("description", models.TextField(null=True)),
+                ("date_time_edited", models.DateTimeField()),
+                (
+                    "discount",
+                    models.FloatField(
+                        null=True,
+                        validators=[
+                            django.core.validators.MinValueValidator(0),
+                            django.core.validators.MaxValueValidator(1),
+                        ],
+                    ),
+                ),
+                ("price", models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
+                (
+                    "coupons_used",
+                    models.IntegerField(default=0, null=True, validators=[django.core.validators.MinValueValidator(0)]),
+                ),
+                (
+                    "customer",
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="accounts.customer"),
+                ),
+                (
+                    "food_portion",
+                    models.ForeignKey(
+                        null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.foodportionrecord"
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='OrderItemToppingRecord',
+            name="OrderItemToppingRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('price', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
-                ('order_item', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='orders.orderitemrecord')),
-                ('topping', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.toppingrecord')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("price", models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
+                (
+                    "order_item",
+                    models.ForeignKey(
+                        null=True, on_delete=django.db.models.deletion.SET_NULL, to="orders.orderitemrecord"
+                    ),
+                ),
+                (
+                    "topping",
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.toppingrecord"),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='OrderRecord',
+            name="OrderRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.TextField(null=True)),
-                ('date_time_edited', models.DateTimeField()),
-                ('customer', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.customer')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("description", models.TextField(null=True)),
+                ("date_time_edited", models.DateTimeField()),
+                (
+                    "customer",
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="accounts.customer"),
+                ),
             ],
             options={
-                'verbose_name': 'Order Record',
-                'verbose_name_plural': 'Order Records',
+                "verbose_name": "Order Record",
+                "verbose_name_plural": "Order Records",
             },
         ),
         migrations.AddField(
-            model_name='orderitemrecord',
-            name='order',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='orders.orderrecord'),
+            model_name="orderitemrecord",
+            name="order",
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="orders.orderrecord"),
         ),
     ]

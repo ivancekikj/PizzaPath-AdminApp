@@ -9,24 +9,24 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('accounts', '0001_initial'),
-        ('menu', '0001_initial'),
+        ("accounts", "0001_initial"),
+        ("menu", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='couponreward',
-            name='models',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.foodportion'),
+            model_name="couponreward",
+            name="models",
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.foodportion"),
         ),
         migrations.AddField(
-            model_name='customer',
-            name='received_posts',
-            field=models.ManyToManyField(to='accounts.newsletterpost'),
+            model_name="customer",
+            name="received_posts",
+            field=models.ManyToManyField(to="accounts.newsletterpost"),
         ),
         migrations.AddField(
-            model_name='couponreward',
-            name='customer',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.customer'),
+            model_name="couponreward",
+            name="customer",
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="accounts.customer"),
         ),
     ]
