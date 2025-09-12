@@ -1,0 +1,11 @@
+[flake8]
+max-line-length = 120
+extend-ignore = E203  # allow Black's slicing style
+exclude =
+    migrations,
+    __pycache__,
+    .venv,
+    env,
+    .git,
+    .mypy_cache,
+    .pytest_cache
