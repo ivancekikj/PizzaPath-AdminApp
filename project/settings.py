@@ -1,5 +1,4 @@
 import os
-import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -9,15 +8,15 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "dummy-key" if "test" in sys.argv else os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = False if "test" in sys.argv else os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 ALLOWED_HOSTS = ["*"]
 
-CUSTOMER_APP_ORIGIN = "http://allowed.com" if "test" in sys.argv else os.getenv("CUSTOMER_APP_ORIGIN")
+CUSTOMER_APP_ORIGIN = os.getenv("CUSTOMER_APP_ORIGIN")
 assert DEBUG or (
     not DEBUG and CUSTOMER_APP_ORIGIN is not None and CUSTOMER_APP_ORIGIN != ""
 ), "CUSTOMER_APP_ORIGIN is not set when DEBUG=False"
@@ -83,30 +82,22 @@ WSGI_APPLICATION = "project.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-if "test" in sys.argv:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": ":memory:",
-        }
-    }
-else:
-    DB_NAME = os.getenv("DB_NAME")
-    DB_USER = os.getenv("DB_USER")
-    DB_PASSWORD = os.getenv("DB_PASSWORD")
-    DB_HOST = os.getenv("DB_HOST")
-    DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
 
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("DB_NAME"),
-            "HOST": os.getenv("DB_HOST"),
-            "USER": os.getenv("DB_USER"),
-            "PASSWORD": os.getenv("DB_PASSWORD"),
-            "PORT": int(os.getenv("DB_PORT")),
-        }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "HOST": os.getenv("DB_HOST"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "PORT": int(os.getenv("DB_PORT")),
     }
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
