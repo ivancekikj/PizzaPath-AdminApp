@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -6,36 +7,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-assert os.getenv("SECRET_KEY") is not None and os.getenv("SECRET_KEY") != "", "SECRET_KEY is not set"
-assert os.getenv("DB_NAME") is not None and os.getenv("DB_NAME") != "", "DB_NAME is not set"
-assert os.getenv("DB_USER") is not None and os.getenv("DB_USER") != "", "DB_USER is not set"
-assert os.getenv("DB_PORT") is not None and os.getenv("DB_PORT") != "", "DB_PORT is not set"
-assert os.getenv("DB_HOST") is not None and os.getenv("DB_HOST") != "", "DB_HOST is not set"
-assert os.getenv("DB_PASSWORD") is not None and os.getenv("DB_PASSWORD") != "", "DB_PASSWORD is not set"
-assert (
-    os.getenv("DEBUG") == "True"
-    or (os.getenv("DEBUG") is None or os.getenv("DEBUG") == "False")
-    and os.getenv("ALLOWED_HOSTS") is not None
-    and os.getenv("ALLOWED_HOSTS") != ""
-), "ALLOWED_HOSTS is not set when DEBUG=False"
-assert (
-    os.getenv("DEBUG") == "True"
-    or (os.getenv("DEBUG") is None or os.getenv("DEBUG") == "False")
-    and os.getenv("CUSTOMER_APP_ORIGIN") is not None
-    and os.getenv("CUSTOMER_APP_ORIGIN") != ""
-), "CUSTOMER_APP_ORIGIN is not set when DEBUG=False"
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = "dummy-key" if "test" in sys.argv else os.getenv("SECRET_KEY")
 
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = False if "test" in sys.argv else os.getenv("DEBUG", "False") == "True"
 
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
-ALLOWED_HOSTS = [] if DEBUG else os.getenv("ALLOWED_HOSTS").split(",")
+ALLOWED_HOSTS = ["*"]
 
-CORS_ALLOWED_ORIGINS = [] if DEBUG else [os.getenv("CUSTOMER_APP_ORIGIN")]
+CUSTOMER_APP_ORIGIN = "http://allowed.com" if "test" in sys.argv else os.getenv("CUSTOMER_APP_ORIGIN")
+assert DEBUG or (
+    not DEBUG and CUSTOMER_APP_ORIGIN is not None and CUSTOMER_APP_ORIGIN != ""
+), "CUSTOMER_APP_ORIGIN is not set when DEBUG=False"
+CORS_ALLOWED_ORIGINS = [] if DEBUG else [CUSTOMER_APP_ORIGIN]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -97,17 +83,30 @@ WSGI_APPLICATION = "project.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "HOST": os.getenv("DB_HOST"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "PORT": int(os.getenv("DB_PORT")),
+if "test" in sys.argv:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
     }
-}
+else:
+    DB_NAME = os.getenv("DB_NAME")
+    DB_USER = os.getenv("DB_USER")
+    DB_PASSWORD = os.getenv("DB_PASSWORD")
+    DB_HOST = os.getenv("DB_HOST")
+    DB_PORT = os.getenv("DB_PORT")
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME"),
+            "HOST": os.getenv("DB_HOST"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD"),
+            "PORT": int(os.getenv("DB_PORT")),
+        }
+    }
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 

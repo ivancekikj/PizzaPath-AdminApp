@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from django.http import JsonResponse
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import RequestFactory, TestCase
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from apps.accounts.middlewares import (
@@ -28,14 +28,12 @@ class MiddlewareTests(TestCase):
         # Dummy view to simulate a successful endpoint
         self.dummy_response = lambda request: JsonResponse({"ok": True})
 
-    @override_settings(DEBUG=False, CORS_ALLOWED_ORIGINS=["http://allowed.com"])
     def test_restrict_api_access_blocks_disallowed_origin(self):
         request = self.factory.get("/api/some-endpoint/", HTTP_ORIGIN="http://disallowed.com")
         middleware = RestrictApiAccessMiddleware(self.dummy_response)
         response = middleware(request)
         self.assertEqual(response.status_code, 403)
 
-    @override_settings(DEBUG=False, CORS_ALLOWED_ORIGINS=["http://allowed.com"])
     def test_restrict_api_access_allows_allowed_origin(self):
         request = self.factory.get("/api/some-endpoint/", HTTP_ORIGIN="http://allowed.com")
         middleware = RestrictApiAccessMiddleware(self.dummy_response)
