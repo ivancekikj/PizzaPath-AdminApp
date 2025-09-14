@@ -1,13 +1,17 @@
 from django.contrib.auth import authenticate
-from django.core.paginator import Paginator, EmptyPage
+from django.core.paginator import EmptyPage, Paginator
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.accounts.models import Customer, CouponReward, NewsletterPost
-from apps.accounts.serializers import CustomerSerializer, CouponRewardSerializer, NewsletterPostSerializer, \
-    RatingSerializer
+from apps.accounts.models import CouponReward, Customer
+from apps.accounts.serializers import (
+    CouponRewardSerializer,
+    CustomerSerializer,
+    NewsletterPostSerializer,
+    RatingSerializer,
+)
 from apps.menu.models import FoodRecord, Rating
 
 
@@ -90,9 +94,11 @@ class CustomerOrderedFoodsView(APIView):
 
     def get(self, request):
         user_id = request.user.id
-        food_ids = FoodRecord.objects.filter(
-            foodportionrecord__orderitemrecord__order__customer_id=user_id
-        ).values_list('id', flat=True).distinct()
+        food_ids = (
+            FoodRecord.objects.filter(foodportionrecord__orderitemrecord__order__customer_id=user_id)
+            .values_list("id", flat=True)
+            .distinct()
+        )
         return Response(list(food_ids), status=200)
 
 
@@ -111,7 +117,7 @@ class CouponRewardView(APIView):
 
     def get(self, request):
         user_id = request.user.id
-        group_by_category = request.query_params.get('group_by_category', None)
+        group_by_category = request.query_params.get("group_by_category", None)
         group_by_category = bool(group_by_category) if group_by_category else False
 
         coupons = list(CouponReward.objects.filter(customer_id=user_id))
@@ -120,17 +126,16 @@ class CouponRewardView(APIView):
             for coupon in coupons:
                 category_id = coupon.food_portion.food.category_id
                 if category_id not in coupons_by_category:
-                    coupons_by_category[category_id] = {
-                        "name": coupon.food_portion.food.category.name,
-                        "coupons": []
+                    coupons_by_category[category_id] = {"name": coupon.food_portion.food.category.name, "coupons": []}
+                coupons_by_category[category_id]["coupons"].append(
+                    {
+                        "food_portion_id": coupon.food_portion_id,
+                        "food_name": coupon.food_portion.food.name,
+                        "size_name": coupon.food_portion.size.name,
+                        "earned_count": coupon.count,
+                        "required_amount_for_one_portion": coupon.food_portion.coupon_value,
                     }
-                coupons_by_category[category_id]["coupons"].append({
-                    "food_portion_id": coupon.food_portion_id,
-                    "food_name": coupon.food_portion.food.name,
-                    "size_name": coupon.food_portion.size.name,
-                    "earned_count": coupon.count,
-                    "required_amount_for_one_portion": coupon.food_portion.coupon_value,
-                })
+                )
             return Response(coupons_by_category, status=200)
 
         serializer = CouponRewardSerializer(coupons, many=True)
@@ -142,14 +147,14 @@ class NewsletterPostsView(APIView):
 
     def get(self, request):
         user_id = request.user.id
-        page = request.query_params.get('page', None)
+        page = request.query_params.get("page", None)
 
         if page is None:
             return Response("page expected.", status=400)
         page = int(page)
         page = max(page, 1)
 
-        posts = Customer.objects.get(id=user_id).received_posts.all().order_by('-date')
+        posts = Customer.objects.get(id=user_id).received_posts.all().order_by("-date")
         paginator = Paginator(posts, 4)
 
         try:
@@ -181,8 +186,8 @@ class RatingView(APIView):
 
     def put(self, request, *args, **kwargs):
         user_id = request.user.id
-        value = request.data.get('value')
-        food_id = request.query_params.get('food_id')
+        value = request.data.get("value")
+        food_id = request.query_params.get("food_id")
 
         if value is None:
             return Response("value expected.", status=400)
@@ -203,7 +208,7 @@ class RatingView(APIView):
 
     def delete(self, request, *args, **kwargs):
         user_id = request.user.id
-        food_id = request.query_params.get('food_id')
+        food_id = request.query_params.get("food_id")
 
         if food_id is None:
             return Response("food_id expected.", status=400)

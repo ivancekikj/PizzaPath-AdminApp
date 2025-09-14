@@ -13,7 +13,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ("id", "food", "food_portions", "quantity", "food_portion_id", "topping_ids", "are_coupons_used",)
+        fields = (
+            "id",
+            "food",
+            "food_portions",
+            "quantity",
+            "food_portion_id",
+            "topping_ids",
+            "are_coupons_used",
+        )
 
     def get_food_portion_id(self, obj):
         return obj.food_portion.id

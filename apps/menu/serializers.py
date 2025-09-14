@@ -1,6 +1,7 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from .models import Category, Food, Rating, Topping, FoodPortion, Size
+
+from .models import Category, Food, FoodPortion, Rating, Size, Topping
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -25,12 +26,12 @@ class FoodSerializer(serializers.ModelSerializer):
         exclude = ("image",)
 
     def get_image_url(self, obj):
-        request = self.context.get('request')
+        request = self.context.get("request")
         image_url = obj.image.url
         return request.build_absolute_uri(image_url)
 
     def get_average_rating(self, obj):
-        return Rating.objects.filter(food_id=obj.id).aggregate(avg_score=Avg('value'))["avg_score"]
+        return Rating.objects.filter(food_id=obj.id).aggregate(avg_score=Avg("value"))["avg_score"]
 
 
 class SizeSerializer(serializers.ModelSerializer):

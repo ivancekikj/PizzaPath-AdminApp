@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orders', '0003_remove_orderitem_discount_remove_orderitem_price_and_more'),
+        ("orders", "0003_remove_orderitem_discount_remove_orderitem_price_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='orderitem',
-            name='date_time_created',
+            model_name="orderitem",
+            name="date_time_created",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
     ]

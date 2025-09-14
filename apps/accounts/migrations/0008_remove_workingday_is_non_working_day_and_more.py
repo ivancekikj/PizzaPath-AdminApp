@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0007_rename_is_closed_workingday_is_non_working_day'),
+        ("accounts", "0007_rename_is_closed_workingday_is_non_working_day"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='workingday',
-            name='is_non_working_day',
+            model_name="workingday",
+            name="is_non_working_day",
         ),
         migrations.AddField(
-            model_name='workingday',
-            name='is_working_day',
+            model_name="workingday",
+            name="is_working_day",
             field=models.BooleanField(default=True),
         ),
     ]

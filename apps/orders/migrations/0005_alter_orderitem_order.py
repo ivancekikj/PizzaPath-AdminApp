@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orders', '0004_orderitem_date_time_created'),
+        ("orders", "0004_orderitem_date_time_created"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='orderitem',
-            name='order',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='orders.order'),
+            model_name="orderitem",
+            name="order",
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to="orders.order"),
         ),
     ]

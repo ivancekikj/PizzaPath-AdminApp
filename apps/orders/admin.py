@@ -5,17 +5,41 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.html import format_html
 
-from .models import Order, OrderRecord, OrderItemRecord, OrderItemToppingRecord
 from ..accounts.models import CouponReward
+from .models import Order, OrderItemRecord, OrderItemToppingRecord, OrderRecord
 
 
 class OrderAdmin(admin.ModelAdmin):
     fieldsets = (
-        ("General Info", {"fields": ("order_number", "customer", "date_time_edited", "status", "description", "number_of_items", "number_of_earned_coupons", "number_of_redeemed_coupons", "total_price")}),
+        (
+            "General Info",
+            {
+                "fields": (
+                    "order_number",
+                    "customer",
+                    "date_time_edited",
+                    "status",
+                    "description",
+                    "number_of_items",
+                    "number_of_earned_coupons",
+                    "number_of_redeemed_coupons",
+                    "total_price",
+                )
+            },
+        ),
         ("Order Items", {"fields": ("items",)}),
     )
-    list_display = ("customer", "status", "date_time_edited",)
-    search_fields = ("customer", "status", "date_time_edited", "description",)
+    list_display = (
+        "customer",
+        "status",
+        "date_time_edited",
+    )
+    search_fields = (
+        "customer",
+        "status",
+        "date_time_edited",
+        "description",
+    )
     list_filter = ("status",)
 
     def get_queryset(self, request):
@@ -46,7 +70,7 @@ class OrderAdmin(admin.ModelAdmin):
                     item_cost += topping.price
                 item_cost *= item.quantity
                 if item.food_portion.discount > 0:
-                    item_cost *= (1 - item.food_portion.discount)
+                    item_cost *= 1 - item.food_portion.discount
             total += math.ceil(item_cost)
         return f"{total} ден"
 
@@ -56,12 +80,15 @@ class OrderAdmin(admin.ModelAdmin):
     def items(self, obj):
         result = ""
         for i, item in enumerate(obj.orderitem_set.all().order_by("-date_time_created"), start=1):
-            digits_space = '&nbsp;' * (len(str(i)) + 3)
+            digits_space = "&nbsp;" * (len(str(i)) + 3)
             item_price = 0 if item.are_coupons_used else item.food_portion.price
             result += f"{i}. Food name: {item.food_portion.food.name}</br>"
             result += f"{digits_space}Food portion: {item.food_portion.size.name} ({item.food_portion.price} ден)</br>"
             result += f"{digits_space}Quantity: {item.quantity}</br>"
-            result += f"{digits_space}Number of coupons used: {0 if not item.are_coupons_used else item.quantity * item.food_portion.coupon_value}</br>"
+            result += (
+                f"{digits_space}Number of coupons used: "
+                f"{0 if not item.are_coupons_used else item.quantity * item.food_portion.coupon_value}</br>"
+            )
             result += f"{digits_space}Number of coupons earned: {item.quantity}</br>"
             if item.food_portion.discount > 0:
                 result += f"{digits_space}Discount: {int(item.food_portion.discount * 100)}%</br>"
@@ -74,7 +101,7 @@ class OrderAdmin(admin.ModelAdmin):
             if not item.are_coupons_used:
                 item_price *= item.quantity
                 if item.food_portion.discount > 0:
-                    item_price *= (1 - item.food_portion.discount)
+                    item_price *= 1 - item.food_portion.discount
                 item_price = math.ceil(item_price)
             result += f"{digits_space}Item price: {item_price} ден</br></br>"
         return format_html(result)
@@ -92,10 +119,7 @@ class OrderAdmin(admin.ModelAdmin):
             if obj.status == Order.STATUS_CHOICES[4][0]:
                 # Convert order, items and toppings to records
                 order_record = OrderRecord(
-                    id=obj.id,
-                    customer=obj.customer,
-                    date_time_edited=obj.date_time_edited,
-                    description=obj.description
+                    id=obj.id, customer=obj.customer, date_time_edited=obj.date_time_edited, description=obj.description
                 )
                 order_record.save()
                 order_items = []
@@ -108,24 +132,29 @@ class OrderAdmin(admin.ModelAdmin):
                         quantity=item.quantity,
                         discount=item.food_portion.discount,
                         price=item.food_portion.price,
-                        coupons_used=0 if not item.are_coupons_used else item.quantity * item.food_portion.coupon_value
+                        coupons_used=0 if not item.are_coupons_used else item.quantity * item.food_portion.coupon_value,
                     )
                     item_record.save()
                     for topping in item.toppings.all():
                         item_topping_record = OrderItemToppingRecord(
-                            topping_id=topping.id,
-                            order_item=item_record,
-                            price=topping.price
+                            topping_id=topping.id, order_item=item_record, price=topping.price
                         )
                         item_topping_record.save()
                     order_items.append(item)
                 # Update coupon counts
                 portion_ids = {item.food_portion_id for item in order_items}
-                coupon_by_portion = {coupon.food_portion_id: coupon for coupon in CouponReward.objects.filter(customer_id=obj.customer_id,food_portion_id__in=portion_ids)}
+                coupon_by_portion = {
+                    coupon.food_portion_id: coupon
+                    for coupon in CouponReward.objects.filter(
+                        customer_id=obj.customer_id, food_portion_id__in=portion_ids
+                    )
+                }
                 for item in order_items:
                     coupon = coupon_by_portion.get(item.food_portion_id)
                     if coupon is None:
-                        coupon = CouponReward.objects.create(customer_id=obj.customer_id,food_portion_id=item.food_portion_id)
+                        coupon = CouponReward.objects.create(
+                            customer_id=obj.customer_id, food_portion_id=item.food_portion_id
+                        )
                         coupon_by_portion[item.food_portion_id] = coupon
                     if item.are_coupons_used:
                         coupon.count -= item.quantity * item.food_portion.coupon_value
@@ -136,16 +165,47 @@ class OrderAdmin(admin.ModelAdmin):
                 obj.delete()
 
     def get_readonly_fields(self, request, obj=None):
-        return ['order_number', 'description', 'customer', 'date_time_edited', 'total_price', 'number_of_items', 'items', 'number_of_earned_coupons', 'number_of_redeemed_coupons']
+        return [
+            "order_number",
+            "description",
+            "customer",
+            "date_time_edited",
+            "total_price",
+            "number_of_items",
+            "items",
+            "number_of_earned_coupons",
+            "number_of_redeemed_coupons",
+        ]
 
 
 class OrderRecordAdmin(admin.ModelAdmin):
     fieldsets = (
-        ("General Info", {"fields": ("order_number", "customer", "date_time_edited", "description", "number_of_items", "number_of_earned_coupons", "number_of_redeemed_coupons", "total_price")}),
+        (
+            "General Info",
+            {
+                "fields": (
+                    "order_number",
+                    "customer",
+                    "date_time_edited",
+                    "description",
+                    "number_of_items",
+                    "number_of_earned_coupons",
+                    "number_of_redeemed_coupons",
+                    "total_price",
+                )
+            },
+        ),
         ("Order Items", {"fields": ("items",)}),
     )
-    list_display = ("customer", "date_time_edited",)
-    search_fields = ("customer__username", "date_time_edited", "description",)
+    list_display = (
+        "customer",
+        "date_time_edited",
+    )
+    search_fields = (
+        "customer__username",
+        "date_time_edited",
+        "description",
+    )
     ordering = ("-date_time_edited",)
 
     def number_of_earned_coupons(self, obj):
@@ -163,7 +223,7 @@ class OrderRecordAdmin(admin.ModelAdmin):
     def items(self, obj):
         result = ""
         for i, item in enumerate(obj.orderitemrecord_set.all().order_by("-date_time_created"), start=1):
-            digits_space = '&nbsp;' * (len(str(i)) + 3)
+            digits_space = "&nbsp;" * (len(str(i)) + 3)
             item_price = 0 if item.coupons_used > 0 else item.price
             result += f"{i}. Food name: {item.food_portion.food.name}</br>"
             result += f"{digits_space}Food portion: {item.food_portion.size.name} ({item.price} ден)</br>"
@@ -194,7 +254,7 @@ class OrderRecordAdmin(admin.ModelAdmin):
                     item_cost += topping.price
                 item_cost *= item.quantity
                 if item.discount > 0:
-                    item_cost *= (1 - item.discount)
+                    item_cost *= 1 - item.discount
             total += math.ceil(item_cost)
         return f"{total} ден"
 

@@ -10,62 +10,86 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('accounts', '0001_initial'),
+        ("accounts", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Size',
+            name="Size",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Topping',
+            name="Topping",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('price', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
+                ("price", models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
             ],
         ),
         migrations.CreateModel(
-            name='Food',
+            name="Food",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('image', models.ImageField(upload_to='food_photos')),
-                ('description', models.TextField()),
-                ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.category')),
-                ('toppings', models.ManyToManyField(to='menu.topping')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
+                ("image", models.ImageField(upload_to="food_photos")),
+                ("description", models.TextField()),
+                (
+                    "category",
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.category"),
+                ),
+                ("toppings", models.ManyToManyField(to="menu.topping")),
             ],
         ),
         migrations.CreateModel(
-            name='Rating',
+            name="Rating",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.IntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(5)])),
-                ('customer', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.customer')),
-                ('food', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.food')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "value",
+                    models.IntegerField(
+                        validators=[
+                            django.core.validators.MinValueValidator(1),
+                            django.core.validators.MaxValueValidator(5),
+                        ]
+                    ),
+                ),
+                (
+                    "customer",
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="accounts.customer"),
+                ),
+                ("food", models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.food")),
             ],
         ),
         migrations.CreateModel(
-            name='FoodPortion',
+            name="FoodPortion",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('price', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
-                ('discount', models.FloatField(blank=True, null=True, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(1)])),
-                ('coupon_value', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
-                ('is_available', models.BooleanField(default=True)),
-                ('food', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.food')),
-                ('size', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.size')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("price", models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
+                (
+                    "discount",
+                    models.FloatField(
+                        blank=True,
+                        null=True,
+                        validators=[
+                            django.core.validators.MinValueValidator(0),
+                            django.core.validators.MaxValueValidator(1),
+                        ],
+                    ),
+                ),
+                ("coupon_value", models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
+                ("is_available", models.BooleanField(default=True)),
+                ("food", models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.food")),
+                ("size", models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.size")),
             ],
         ),
     ]

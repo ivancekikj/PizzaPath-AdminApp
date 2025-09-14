@@ -6,25 +6,25 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0003_rename_phonenumber_customer_phone_number'),
+        ("accounts", "0003_rename_phonenumber_customer_phone_number"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='customer',
-            options={'verbose_name': 'Customer', 'verbose_name_plural': 'Customers'},
+            name="customer",
+            options={"verbose_name": "Customer", "verbose_name_plural": "Customers"},
         ),
         migrations.AlterModelOptions(
-            name='user',
-            options={'verbose_name': 'Employee', 'verbose_name_plural': 'Employees'},
+            name="user",
+            options={"verbose_name": "Employee", "verbose_name_plural": "Employees"},
         ),
         migrations.AlterModelOptions(
-            name='workingday',
-            options={'verbose_name_plural': 'Working Days'},
+            name="workingday",
+            options={"verbose_name_plural": "Working Days"},
         ),
         migrations.RenameField(
-            model_name='couponreward',
-            old_name='models',
-            new_name='food_portion',
+            model_name="couponreward",
+            old_name="models",
+            new_name="food_portion",
         ),
     ]

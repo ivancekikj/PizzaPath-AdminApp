@@ -1,13 +1,15 @@
-from operator import index
-
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 
 from apps.accounts.models import Customer
-from apps.menu.models import Food, FoodPortion, Topping, FoodPortionRecord, ToppingRecord
-from django.contrib.auth.models import User
+from apps.menu.models import (
+    FoodPortion,
+    FoodPortionRecord,
+    Topping,
+    ToppingRecord,
+)
 
 
 class AbstractOrder(models.Model):
@@ -16,7 +18,7 @@ class AbstractOrder(models.Model):
     date_time_edited = models.DateTimeField(null=False)
 
     class Meta:
-            abstract = True
+        abstract = True
 
 
 class AbstractOrderItem(models.Model):
@@ -36,7 +38,9 @@ class Order(AbstractOrder):
         ("closed", "closed"),
     ]
 
-    status = models.CharField(max_length=100, null=False, blank=False, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
+    status = models.CharField(
+        max_length=100, null=False, blank=False, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0]
+    )
 
     class Meta:
         verbose_name = "Active Order"
@@ -55,11 +59,11 @@ class Order(AbstractOrder):
             new_index = Order.find_index_of_status(self.status)
             old_index = Order.find_index_of_status(existing_order.status)
             if new_index < old_index:
-                raise ValidationError({'status': 'Can\'t revert to a previous status.'})
+                raise ValidationError({"status": "Can't revert to a previous status."})
             if new_index == old_index:
-                raise ValidationError({'status': 'Can\'t save the same status.'})
+                raise ValidationError({"status": "Can't save the same status."})
             if old_index + 1 != new_index:
-                raise ValidationError({'status': 'Can\'t skip a status.'})
+                raise ValidationError({"status": "Can't skip a status."})
 
     def __str__(self):
         return f"{self.customer.username} - {self.status}"

@@ -7,30 +7,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orders', '0007_alter_order_options_alter_orderitem_options_and_more'),
+        ("orders", "0007_alter_order_options_alter_orderitem_options_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='orderitemrecord',
-            name='customer',
+            model_name="orderitemrecord",
+            name="customer",
         ),
         migrations.RemoveField(
-            model_name='orderitemrecord',
-            name='date_time_edited',
+            model_name="orderitemrecord",
+            name="date_time_edited",
         ),
         migrations.RemoveField(
-            model_name='orderitemrecord',
-            name='description',
+            model_name="orderitemrecord",
+            name="description",
         ),
         migrations.AddField(
-            model_name='orderitemrecord',
-            name='quantity',
+            model_name="orderitemrecord",
+            name="quantity",
             field=models.IntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)]),
         ),
         migrations.AlterField(
-            model_name='orderitem',
-            name='quantity',
+            model_name="orderitem",
+            name="quantity",
             field=models.IntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)]),
         ),
     ]

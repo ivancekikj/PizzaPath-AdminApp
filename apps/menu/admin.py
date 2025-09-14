@@ -1,8 +1,19 @@
 from django.contrib import admin
 from django.db.models import Avg
 
-from .models import Food, Category, Topping, FoodPortion, Size, Rating, FoodRecord, FoodPortionRecord, ToppingRecord, \
-    CategoryRecord, SizeRecord
+from .models import (
+    Category,
+    CategoryRecord,
+    Food,
+    FoodPortion,
+    FoodPortionRecord,
+    FoodRecord,
+    Rating,
+    Size,
+    SizeRecord,
+    Topping,
+    ToppingRecord,
+)
 
 
 class FoodAdmin(admin.ModelAdmin):

@@ -1,5 +1,4 @@
 from django.utils import timezone
-
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,10 +14,10 @@ class OrderItemView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        quantity = request.data.get('quantity', None)
-        food_portion_id = request.data.get('food_portion_id', None)
-        are_coupons_used = request.data.get('are_coupons_used', False)
-        toppings_ids = request.data.get('toppings_ids', [])
+        quantity = request.data.get("quantity", None)
+        food_portion_id = request.data.get("food_portion_id", None)
+        are_coupons_used = request.data.get("are_coupons_used", False)
+        toppings_ids = request.data.get("toppings_ids", [])
         user_id = request.user.id
 
         if quantity is None:
@@ -49,11 +48,11 @@ class OrderItemView(APIView):
         return Response(status=200)
 
     def put(self, request, *args, **kwargs):
-        item_id = kwargs.get('id')
-        quantity = request.data.get('quantity', None)
-        food_portion_id = request.data.get('food_portion_id', None)
-        are_coupons_used = request.data.get('are_coupons_used', None)
-        toppings_ids = request.data.get('toppings_ids', [])
+        item_id = kwargs.get("id")
+        quantity = request.data.get("quantity", None)
+        food_portion_id = request.data.get("food_portion_id", None)
+        are_coupons_used = request.data.get("are_coupons_used", None)
+        toppings_ids = request.data.get("toppings_ids", [])
         user_id = request.user.id
 
         if quantity is None:
@@ -85,7 +84,7 @@ class OrderItemView(APIView):
         return Response(status=200)
 
     def delete(self, request, *args, **kwargs):
-        item_id = kwargs.get('id')
+        item_id = kwargs.get("id")
         user_id = request.user.id
 
         order = get_current_order(user_id)
@@ -111,13 +110,13 @@ class CurrentOrderView(APIView):
         order = get_current_order(user_id)
         if order is None:
             return Response(None, status=200)
-        serialized_data = OrderSerializer(order, context={'request': request}).data
+        serialized_data = OrderSerializer(order, context={"request": request}).data
         return Response(serialized_data, status=200)
 
     def put(self, request, *args, **kwargs):
         user_id = request.user.id
-        description = request.data.get('description', None)
-        submitted = request.data.get('submitted', None)
+        description = request.data.get("description", None)
+        submitted = request.data.get("submitted", None)
 
         order = get_current_order(user_id)
         if order is None:
@@ -158,18 +157,23 @@ class OrderCouponRewardView(APIView):
         if order is None:
             return Response(None, status=200)
         earned_coupons, redeemed_coupons = 0, 0
-        coupon_by_portion = {coupon.food_portion_id: coupon for coupon in CouponReward.objects.filter(customer_id=user_id)}
+        coupon_by_portion = {
+            coupon.food_portion_id: coupon for coupon in CouponReward.objects.filter(customer_id=user_id)
+        }
         order_items = OrderItem.objects.filter(order__customer_id=user_id)
         for item in order_items:
             if item.are_coupons_used:
                 redeemed_coupons += item.quantity * item.food_portion.coupon_value
                 coupon_by_portion[item.food_portion_id].count -= item.quantity * item.food_portion.coupon_value
             earned_coupons += item.quantity
-        return Response({
-            "coupons": CouponRewardSerializer(list(coupon_by_portion.values()), many=True).data,
-            "earned_coupons": earned_coupons,
-            "redeemed_coupons": redeemed_coupons,
-        }, status=200)
+        return Response(
+            {
+                "coupons": CouponRewardSerializer(list(coupon_by_portion.values()), many=True).data,
+                "earned_coupons": earned_coupons,
+                "redeemed_coupons": redeemed_coupons,
+            },
+            status=200,
+        )
 
 
 def check_if_editable(order: Order):
