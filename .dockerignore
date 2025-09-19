@@ -1,0 +1,52 @@
+# Python cache / build files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+*.whl
+*.manifest
+*.spec
+.Python
+.pytest_cache/
+
+# Django / runtime files
+db.sqlite3
+*.log
+*.pot
+*.pyc
+*.mo
+
+# Environment / secrets
+.env
+*.env
+.env.*
+
+# Venvs
+venv/
+.venv/
+env/
+ENV/
+
+# Git / CI
+.git
+.gitignore
+.gitattributes
+.github/
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker / deployment
+.dockerignore
+Dockerfile*
+
+# OS-specific
+.DS_Store
+Thumbs.db
