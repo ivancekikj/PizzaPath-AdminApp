@@ -12,6 +12,10 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
+NGINX_ORIGIN = os.getenv("NGINX_ORIGIN")
+if NGINX_ORIGIN:
+    CSRF_TRUSTED_ORIGINS = [NGINX_ORIGIN]
+
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 ALLOWED_HOSTS = ["*"]
@@ -149,7 +153,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+if not DEBUG:
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+else:
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
