@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: postgres
 
   admin-app:
-    image: ivancekikj/pizza-path-admin-app:main
+    image: ivancekikj/pizza-path-admin-app:37-docker-build
     container_name: admin-app
     depends_on:
       - db
