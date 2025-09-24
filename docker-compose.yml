@@ -17,7 +17,6 @@ services:
       - db
     volumes:
       - static_volume:/app/staticfiles
-      - media_volume:/app/mediafiles
     environment:
       DJANGO_SUPERUSER_USERNAME: admin
       DJANGO_SUPERUSER_EMAIL: admin@pizzadelicious.com
@@ -30,29 +29,28 @@ services:
       DB_NAME: PizzaDeliciousDb
       DB_PORT: 5432
       NGINX_ORIGIN: http://localhost:8001
+      CUSTOMER_APP_ORIGIN: http://localhost:8001
 
-  admin-app-proxy:
+  proxy:
     image: nginx:latest
     ports:
       - "8001:80"
     volumes:
-      - nginx.conf:/etc/nginx/nginx.conf:ro
-      - static_volume:/static
-      - static_volume:/media
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/staticfiles
     depends_on:
       - admin-app
+#      - customer-app
 
-  customer-app:
-    image: ivancekikj/pizza-path-customer-app:main
-    ports:
-      - "3000:3000"
-    environment:
-      NODE_ENV: production
-      VITE_ADMIN_APP_URL: http://admin-app:8000
-    depends_on:
-      - admin-app
+#  customer-app:
+#    image: ivancekikj/pizza-path-customer-app:env-var-in-docker
+#    ports:
+#      - "3000:3000"
+#    environment:
+#      PUBLIC_ADMIN_APP_URL: http://localhost:8001
+#    depends_on:
+#      - admin-app
 
 volumes:
   postgres_data:
   static_volume:
-  media_volume:

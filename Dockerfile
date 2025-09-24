@@ -38,6 +38,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Switch to non-root user
+RUN mkdir -p /app/staticfiles && chown -R appuser:appuser /app/staticfiles
 USER appuser
 
 # Expose the application port
