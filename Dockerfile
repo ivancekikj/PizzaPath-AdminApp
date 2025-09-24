@@ -39,6 +39,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Switch to non-root user
 RUN mkdir -p /app/staticfiles && chown -R appuser:appuser /app/staticfiles
+RUN mkdir -p /app/media && chown -R appuser:appuser /app/media
 USER appuser
 
 # Expose the application port
