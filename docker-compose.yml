@@ -29,8 +29,7 @@ services:
       DB_PASSWORD: postgres
       DB_NAME: PizzaDeliciousDb
       DB_PORT: 5432
-      NGINX_ORIGIN: http://localhost:8001
-      CUSTOMER_APP_ORIGIN: http://localhost:8001
+      PROXY_ORIGIN: http://localhost:8001
 
   proxy:
     image: nginx:latest
@@ -42,16 +41,14 @@ services:
       - media_volume:/app/media
     depends_on:
       - admin-app
-#      - customer-app
+      - customer-app
 
-#  customer-app:
-#    image: ivancekikj/pizza-path-customer-app:env-var-in-docker
-#    ports:
-#      - "3000:3000"
-#    environment:
-#      PUBLIC_ADMIN_APP_URL: http://localhost:8001
-#    depends_on:
-#      - admin-app
+  customer-app:
+    image: ivancekikj/pizza-path-customer-app:env-var-in-docker
+    environment:
+      PUBLIC_ADMIN_APP_URL: http://localhost:8001
+    depends_on:
+      - admin-app
 
 volumes:
   postgres_data:
