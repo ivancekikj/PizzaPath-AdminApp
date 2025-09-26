@@ -1,0 +1,61 @@
+name: pizza-path
+
+services:
+  db:
+    image: postgres:17
+    container_name: db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: PizzaDeliciousDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  admin-app:
+    image: ivancekikj/pizza-path-admin-app:main
+    container_name: admin-app
+    depends_on:
+      - db
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    environment:
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_EMAIL: admin@pizzadelicious.com
+      DJANGO_SUPERUSER_PASSWORD: Password1!
+      SECRET_KEY: 257lWLSJFW98W(Fiw9fu(UWUWEEELFKjefj
+      DEBUG: False
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: PizzaDeliciousDb
+      DB_PORT: 5432
+      PROXY_ORIGIN: http://localhost:8001
+
+  proxy:
+    image: nginx:latest
+    container_name: proxy
+    ports:
+      - "8001:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - admin-app
+      - customer-app
+
+  customer-app:
+    container_name: customer-app
+    image: ivancekikj/pizza-path-customer-app:main
+    environment:
+      PUBLIC_ADMIN_APP_URL: http://localhost:8001
+    depends_on:
+      - admin-app
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

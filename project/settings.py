@@ -12,15 +12,17 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
+PROXY_ORIGIN = os.getenv("PROXY_ORIGIN")
+assert DEBUG or (
+    not DEBUG and PROXY_ORIGIN is not None and PROXY_ORIGIN != ""
+), "PROXY_ORIGIN is not set when DEBUG=False"
+CORS_ALLOWED_ORIGINS = [] if DEBUG else [PROXY_ORIGIN]
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS = [PROXY_ORIGIN]
+
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 ALLOWED_HOSTS = ["*"]
-
-CUSTOMER_APP_ORIGIN = os.getenv("CUSTOMER_APP_ORIGIN")
-assert DEBUG or (
-    not DEBUG and CUSTOMER_APP_ORIGIN is not None and CUSTOMER_APP_ORIGIN != ""
-), "CUSTOMER_APP_ORIGIN is not set when DEBUG=False"
-CORS_ALLOWED_ORIGINS = [] if DEBUG else [CUSTOMER_APP_ORIGIN]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -54,7 +56,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "apps.accounts.middlewares.RestrictApiAccessMiddleware",
     "apps.accounts.middlewares.JWTRefreshMiddleware",
     "apps.accounts.middlewares.JWTAuthMiddleware",
 ]
@@ -150,6 +151,8 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+if not DEBUG:
+    STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
