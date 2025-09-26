@@ -16,9 +16,9 @@ PROXY_ORIGIN = os.getenv("PROXY_ORIGIN")
 assert DEBUG or (
     not DEBUG and PROXY_ORIGIN is not None and PROXY_ORIGIN != ""
 ), "PROXY_ORIGIN is not set when DEBUG=False"
+CORS_ALLOWED_ORIGINS = [] if DEBUG else [PROXY_ORIGIN]
 if not DEBUG:
     CSRF_TRUSTED_ORIGINS = [PROXY_ORIGIN]
-    CORS_ALLOWED_ORIGINS = [] if DEBUG else [PROXY_ORIGIN]
 
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
@@ -56,7 +56,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "apps.accounts.middlewares.RestrictApiAccessMiddleware",
     "apps.accounts.middlewares.JWTRefreshMiddleware",
     "apps.accounts.middlewares.JWTAuthMiddleware",
 ]
