@@ -1,6 +1,9 @@
+name: pizza-path
+
 services:
   db:
     image: postgres:17
+    container_name: db
     ports:
       - "5432:5432"
     volumes:
@@ -11,7 +14,7 @@ services:
       POSTGRES_PASSWORD: postgres
 
   admin-app:
-    image: ivancekikj/pizza-path-admin-app:37-docker-build
+    image: ivancekikj/pizza-path-admin-app:main
     container_name: admin-app
     depends_on:
       - db
@@ -33,6 +36,7 @@ services:
 
   proxy:
     image: nginx:latest
+    container_name: proxy
     ports:
       - "8001:80"
     volumes:
@@ -44,7 +48,8 @@ services:
       - customer-app
 
   customer-app:
-    image: ivancekikj/pizza-path-customer-app:env-var-in-docker
+    container_name: customer-app
+    image: ivancekikj/pizza-path-customer-app:main
     environment:
       PUBLIC_ADMIN_APP_URL: http://localhost:8001
     depends_on:
