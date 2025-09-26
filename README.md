@@ -28,3 +28,13 @@ DB_PORT=
         <pre>python manage.py runserver</pre>
     </li>
 </ol>
+
+# Run the whole PizzaPath system
+
+<ol>
+    <li>Clone the repository.</li>
+    <li>Install docker and docker compose.</li>
+    <li>Run the following command in the root folder:
+        <pre>docker compose up -d</pre>
+    </li>
+</ol>
