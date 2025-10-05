@@ -34,6 +34,14 @@ DB_PORT=
 <ol>
     <li>Clone the repository.</li>
     <li>Install docker and docker compose.</li>
+    <li>Create a file called '.env.email' in the root folder with the following information:
+        <pre>
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASSWORD=
+</pre>
+    </li>
     <li>Run the following command in the root folder:
         <pre>docker compose up -d</pre>
     </li>

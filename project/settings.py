@@ -30,6 +30,9 @@ CORS_ALLOW_HEADERS = ["withauthentication", "content-type"]
 
 APPEND_SLASH = False
 
+EMAIL_APP_URL = os.getenv("EMAIL_APP_URL")
+assert DEBUG or (EMAIL_APP_URL is not None and EMAIL_APP_URL != ""), "EMAIL_APP_URL is not set when DEBUG=False"
+
 # Application definition
 
 INSTALLED_APPS = [

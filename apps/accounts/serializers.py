@@ -25,6 +25,7 @@ class CustomerSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, data):
+        data["is_active"] = False
         user = Customer.objects.create_user(**data)
         return user
 

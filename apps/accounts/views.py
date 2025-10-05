@@ -21,7 +21,7 @@ class CustomerView(APIView):
     def post(self, request):
         serializer = CustomerSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            # serializer.save()
             return Response(status=200)
         return Response(serializer.errors, status=400)
 
@@ -67,6 +67,8 @@ class LoginView(APIView):
 
         if user is None or user.is_staff:
             return Response({"detail": "No account with the given credentials found."}, status=400)
+        # if not user.is_active:
+        #     return Response({"detail": "Account email hasn't been confirmed."}, status=400)
 
         refresh = RefreshToken.for_user(user)
         response = Response(status=200)
