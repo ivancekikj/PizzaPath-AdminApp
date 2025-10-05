@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from apps.accounts.email_sender import send_email_confirmation_link
 from apps.accounts.models import CouponReward, Customer
 from apps.accounts.serializers import (
     CouponRewardSerializer,
@@ -12,6 +13,7 @@ from apps.accounts.serializers import (
     NewsletterPostSerializer,
     RatingSerializer,
 )
+from apps.accounts.tokens import generate_email_token, verify_email_token
 from apps.menu.models import FoodRecord, Rating
 
 
@@ -21,9 +23,34 @@ class CustomerView(APIView):
     def post(self, request):
         serializer = CustomerSerializer(data=request.data)
         if serializer.is_valid():
-            # serializer.save()
+            serializer.save()
+            customer = Customer.objects.get(username=serializer.data["username"])
+            token = generate_email_token(customer)
+            send_email_confirmation_link(customer.email, token)
             return Response(status=200)
         return Response(serializer.errors, status=400)
+
+
+class ConfirmEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        token = request.data.get("token")
+        if token is None:
+            return Response("token expected.", status=400)
+        decoded = verify_email_token(token)
+        if decoded == (None, None):
+            return Response("Invalid or expired token.", status=400)
+        user_id, email = decoded
+        customer = Customer.objects.get(email=email)
+        if customer is None:
+            return Response("No account with the given credentials found.", status=400)
+        if customer.is_email_confirmed:
+            return Response("Email already confirmed.", status=400)
+        customer.is_email_confirmed = True
+        customer.is_active = True
+        customer.save()
+        return Response(status=200)
 
 
 class CurrentCustomerView(APIView):
@@ -67,8 +94,6 @@ class LoginView(APIView):
 
         if user is None or user.is_staff:
             return Response({"detail": "No account with the given credentials found."}, status=400)
-        # if not user.is_active:
-        #     return Response({"detail": "Account email hasn't been confirmed."}, status=400)
 
         refresh = RefreshToken.for_user(user)
         response = Response(status=200)

@@ -19,6 +19,7 @@ DB_USER=
 DB_PASSWORD=
 DB_NAME=
 DB_PORT=
+CUSTOMER_APP_URL=
 </pre>
     </li>
     <li>Create a new postgres database with the name specified in the '.env' file.</li>

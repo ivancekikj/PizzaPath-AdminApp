@@ -13,9 +13,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 PROXY_ORIGIN = os.getenv("PROXY_ORIGIN")
-assert DEBUG or (
-    not DEBUG and PROXY_ORIGIN is not None and PROXY_ORIGIN != ""
-), "PROXY_ORIGIN is not set when DEBUG=False"
+assert DEBUG or (PROXY_ORIGIN is not None and PROXY_ORIGIN != ""), "PROXY_ORIGIN is not set when DEBUG=False"
 CORS_ALLOWED_ORIGINS = [] if DEBUG else [PROXY_ORIGIN]
 if not DEBUG:
     CSRF_TRUSTED_ORIGINS = [PROXY_ORIGIN]
@@ -32,6 +30,9 @@ APPEND_SLASH = False
 
 EMAIL_APP_URL = os.getenv("EMAIL_APP_URL")
 assert DEBUG or (EMAIL_APP_URL is not None and EMAIL_APP_URL != ""), "EMAIL_APP_URL is not set when DEBUG=False"
+
+CUSTOMER_APP_URL = os.getenv("CUSTOMER_APP_URL") if not DEBUG else PROXY_ORIGIN
+assert CUSTOMER_APP_URL is not None and CUSTOMER_APP_URL != "", "CUSTOMER_APP_URL is not set"
 
 # Application definition
 
