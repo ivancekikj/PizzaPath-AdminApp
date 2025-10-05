@@ -31,7 +31,7 @@ APPEND_SLASH = False
 EMAIL_APP_URL = os.getenv("EMAIL_APP_URL")
 assert DEBUG or (EMAIL_APP_URL is not None and EMAIL_APP_URL != ""), "EMAIL_APP_URL is not set when DEBUG=False"
 
-CUSTOMER_APP_URL = os.getenv("CUSTOMER_APP_URL") if not DEBUG else PROXY_ORIGIN
+CUSTOMER_APP_URL = os.getenv("CUSTOMER_APP_URL") if DEBUG else PROXY_ORIGIN
 assert CUSTOMER_APP_URL is not None and CUSTOMER_APP_URL != "", "CUSTOMER_APP_URL is not set"
 
 # Application definition
