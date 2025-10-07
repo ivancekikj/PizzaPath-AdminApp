@@ -1,17 +1,10 @@
 from django.contrib import admin
 
 from apps.accounts.models import CouponReward, Customer, NewsletterPost, User
+from project import settings
 
 
 class EmployeeAdmin(admin.ModelAdmin):
-    fieldsets = (
-        (
-            "Account Info",
-            {"fields": ("username", "email", "is_email_confirmed", "is_active", "date_joined", "last_login")},
-        ),
-        ("Personal Info", {"fields": ("first_name", "last_name")}),
-        ("Privileges", {"fields": ("is_superuser", "groups", "user_permissions")}),
-    )
     readonly_fields = ("date_joined", "last_login")
     list_display = ("username", "email", "first_name", "last_name", "is_superuser")
     list_filter = ("is_superuser", "is_active", "is_email_confirmed", "groups")
@@ -21,6 +14,19 @@ class EmployeeAdmin(admin.ModelAdmin):
         "first_name",
         "last_name",
     )
+
+    def get_fieldsets(self, request, obj=None):
+        return (
+            (
+                "Account Info",
+                {
+                    "fields": ("username", "email", "is_email_confirmed", "is_active", "date_joined", "last_login")
+                    + (("password",) if obj is None else ())
+                },
+            ),
+            ("Personal Info", {"fields": ("first_name", "last_name")}),
+            ("Privileges", {"fields": ("is_superuser", "groups", "user_permissions")}),
+        )
 
     def get_queryset(self, request):
         return super().get_queryset(request).filter(is_staff=True)
@@ -32,7 +38,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         return request.user.is_superuser
 
     def has_delete_permission(self, request, obj=None):
-        return request.user.is_superuser
+        return False
 
     def save_model(self, request, obj, form, change):
         obj.is_staff = True
@@ -40,12 +46,6 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ("Account Info", {"fields": ("username", "email", "is_email_confirmed", "date_joined", "last_login")}),
-        ("Personal Info", {"fields": ("first_name", "last_name", "address", "phone_number")}),
-        ("Rewards", {"fields": ("coupons",)}),
-        ("Newsletter", {"fields": ("is_subscribed_to_newsletter", "received_posts")}),
-    )
     list_display = (
         "username",
         "email",
@@ -54,6 +54,27 @@ class CustomerAdmin(admin.ModelAdmin):
     )
     list_filter = ("is_subscribed_to_newsletter", "is_email_confirmed")
     search_fields = ("username", "email", "first_name", "last_name", "address", "phone_number")
+    readonly_fields = ("date_joined", "last_login", "coupons", "is_email_confirmed")
+
+    def get_fieldsets(self, request, obj=None):
+        return (
+            (
+                "Account Info",
+                {
+                    "fields": (
+                        "username",
+                        "email",
+                        "is_email_confirmed",
+                        "date_joined",
+                        "last_login",
+                    )
+                    + (("password",) if settings.DEBUG and obj is None else ())
+                },
+            ),
+            ("Personal Info", {"fields": ("first_name", "last_name", "address", "phone_number")}),
+            ("Rewards", {"fields": ("coupons",)}),
+            ("Newsletter", {"fields": ("is_subscribed_to_newsletter",)}),
+        )
 
     def coupons(self, obj):
         result = ""
@@ -65,7 +86,7 @@ class CustomerAdmin(admin.ModelAdmin):
         return super().get_queryset(request).filter(is_staff=False)
 
     def has_add_permission(self, request):
-        return False
+        return settings.DEBUG
 
     def has_delete_permission(self, request, obj=None):
         return False

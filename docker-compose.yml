@@ -18,6 +18,7 @@ services:
     container_name: admin-app
     depends_on:
       - db
+      - email-app
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
@@ -33,6 +34,7 @@ services:
       DB_NAME: PizzaDeliciousDb
       DB_PORT: 5432
       PROXY_ORIGIN: http://localhost:8001
+      EMAIL_APP_URL: http://email-app:8000
 
   proxy:
     image: nginx:latest
@@ -54,6 +56,12 @@ services:
       PUBLIC_ADMIN_APP_URL: http://localhost:8001
     depends_on:
       - admin-app
+
+  email-app:
+    container_name: email-app
+    image: ivancekikj/pizza-path-email-app:main
+    env_file:
+      - .env.email
 
 volumes:
   postgres_data:

@@ -5,6 +5,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from apps.accounts.views import (
+    ConfirmEmailView,
     CouponRewardView,
     CurrentCustomerView,
     CustomerOrderedFoodsView,
@@ -39,6 +40,7 @@ urlpatterns = [
     path("api/orders/current-order/", CurrentOrderView.as_view()),
     path("api/orders/current-order/coupon-info", OrderCouponRewardView.as_view()),
     path("api/accounts/customers/", CustomerView.as_view()),
+    path("api/accounts/customers/email/validation/", ConfirmEmailView.as_view()),
     path("api/accounts/customers/logged-in-customer/", CurrentCustomerView.as_view()),
     path("api/accounts/customers/logged-in-customer/ordered-foods/ids/", CustomerOrderedFoodsView.as_view()),
     path("api/accounts/customers/logged-in-customer/coupons/", CouponRewardView.as_view()),
