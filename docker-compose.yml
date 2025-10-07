@@ -14,7 +14,7 @@ services:
       POSTGRES_PASSWORD: postgres
 
   admin-app:
-    image: ivancekikj/pizza-path-admin-app:7-email-confirmation
+    image: ivancekikj/pizza-path-admin-app:main
     container_name: admin-app
     depends_on:
       - db
@@ -51,7 +51,7 @@ services:
 
   customer-app:
     container_name: customer-app
-    image: ivancekikj/pizza-path-customer-app:24-email-confirmation
+    image: ivancekikj/pizza-path-customer-app:main
     environment:
       PUBLIC_ADMIN_APP_URL: http://localhost:8001
     depends_on:
@@ -59,7 +59,7 @@ services:
 
   email-app:
     container_name: email-app
-    image: ivancekikj/pizza-path-email-app:1-email-confirmation
+    image: ivancekikj/pizza-path-email-app:main
     env_file:
       - .env.email
 
