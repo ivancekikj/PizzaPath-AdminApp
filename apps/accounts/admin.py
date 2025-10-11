@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from apps.accounts.email_sender import send_newsletter_posts
 from apps.accounts.models import CouponReward, Customer, NewsletterPost, User
 from project import settings
 
@@ -101,9 +102,14 @@ class NewsletterPostAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.save()
-        for customer in Customer.objects.filter(is_subscribed_to_newsletter=True):
+        emails = list()
+        for customer in Customer.objects.filter(is_subscribed_to_newsletter=True, is_active=True):
+            if customer.is_email_confirmed:
+                emails.append(customer.email)
             customer.received_posts.add(obj)
             customer.save()
+        if len(emails) > 0:
+            send_newsletter_posts(emails, obj.title, obj.content)
 
     def has_change_permission(self, request, obj=None):
         return False
