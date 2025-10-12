@@ -42,7 +42,9 @@ class EmployeeAdmin(admin.ModelAdmin):
         return False
 
     def save_model(self, request, obj, form, change):
-        obj.is_staff = True
+        if not change:
+            obj.is_staff = True
+            obj.set_password(form.cleaned_data["password"])
         obj.save()
 
 
@@ -94,6 +96,11 @@ class CustomerAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.set_password(form.cleaned_data["password"])
+        obj.save()
 
 
 class NewsletterPostAdmin(admin.ModelAdmin):
