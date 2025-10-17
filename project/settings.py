@@ -159,4 +159,4 @@ if not DEBUG:
     STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/" if not DEBUG else f"{PROXY_ORIGIN}/media/"
+MEDIA_URL = "/media/" if DEBUG else f"{PROXY_ORIGIN}/media/"
